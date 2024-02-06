@@ -2,19 +2,22 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { LoginDto } from './dto/login.dto';
+import { LoginDto } from '../dto/login.dto';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class RefreshTokenStrategy extends PassportStrategy(
+  Strategy,
+  'jwt-refresh',
+) {
   constructor(private readonly configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExparation: true,
-      secretOrKey: configService.get('JWT_SECRET'),
+      ignoreExparation: false,
+      secretOrKey: configService.get('JWT_REFRESH_SECRET'),
     });
   }
 
-  async validate({ email }: Pick<LoginDto, 'email'>) {
-    return email;
+  async validate({ phoneNumber }: Pick<LoginDto, 'phoneNumber'>) {
+    return { phoneNumber };
   }
 }

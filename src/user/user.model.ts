@@ -13,7 +13,7 @@ export class User extends Model {
   organisationId: number;
 
   @Column
-  verificationCode: number;
+  verificationCode: string;
 
   @Column
   codeExpiredAt: Date;
@@ -23,4 +23,10 @@ export class User extends Model {
 
   @Column
   passwordHash: string;
+
+  @Column
+  status: string;
+
+  @Column
+  refreshToken: string;
 }

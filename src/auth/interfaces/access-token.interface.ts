@@ -1,3 +1,4 @@
-export interface IAccessToken {
+export interface ITokens {
   accessToken: string;
+  refreshToken: string;
 }

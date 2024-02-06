@@ -21,14 +21,7 @@ export class UserRepository implements IUserRepository {
     return user;
   }
 
-  async getById(id: string): Promise<User | null> {
-    const user = await this.userModel.findByPk(id);
-    if (!user) return null;
-
-    return user;
-  }
-
-  async setPassword(passwordHash: string, id: string): Promise<void> {
-    await this.userModel.update({ passwordHash }, { where: { id } });
+  async update(userData: Partial<User>, phoneNumber: string): Promise<void> {
+    await this.userModel.update(userData, { where: { phoneNumber } });
   }
 }

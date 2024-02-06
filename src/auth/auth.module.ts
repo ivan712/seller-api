@@ -3,11 +3,17 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { PassportModule } from '@nestjs/passport';
 import { UserModule } from 'src/user/user.module';
+import { AccessTokenStrategy } from './jwt/access.strategy';
+import { RolesGuard } from './jwt/roles.guard';
+import { RefreshTokenStrategy } from './jwt/refresh.strategy';
 
 @Module({
   imports: [
     UserModule,
+    ConfigModule,
+    PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -16,7 +22,12 @@ import { UserModule } from 'src/user/user.module';
       }),
     }),
   ],
-  providers: [AuthService],
+  providers: [
+    AuthService,
+    AccessTokenStrategy,
+    RefreshTokenStrategy,
+    RolesGuard,
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}

@@ -1,8 +1,9 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { IUserRepository } from './interfaces/user-repository.interface';
 import { User } from './user.model';
 import { ICreateUser } from './interfaces/create-user.interface';
+import { UserStatus } from './user.status';
 
 @Injectable()
 export class UserService {
@@ -18,12 +19,18 @@ export class UserService {
     return this.userRepository.getByPhone(phoneNumber);
   }
 
-  async setPassword(password: string, phoneNumber) {
-    const user = await this.getByPhone(phoneNumber);
+  async confirmRegistration(phoneNumber: string) {
+    await this.userRepository.update(
+      { status: UserStatus.REGISTER },
+      phoneNumber,
+    );
+  }
 
-    //hardcode
-    if (!user) throw new NotFoundException('user not found');
+  async setPassword(passwordHash: string, phoneNumber: string) {
+    await this.userRepository.update({ passwordHash }, phoneNumber);
+  }
 
-    await this.userRepository.setPassword(password, user.id);
+  async updateRefreshToken(refreshToken: string, phoneNumber: string) {
+    await this.userRepository.update({ refreshToken }, phoneNumber);
   }
 }
