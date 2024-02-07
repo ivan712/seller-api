@@ -2,7 +2,7 @@ import { Table, Column, Model } from 'sequelize-typescript';
 import { Role } from './roles.enum';
 
 @Table
-export class User extends Model {
+export class UserModel extends Model {
   @Column
   phoneNumber: string;
 
@@ -26,7 +26,4 @@ export class User extends Model {
 
   @Column
   status: string;
-
-  @Column
-  refreshToken: string;
 }

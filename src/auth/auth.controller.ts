@@ -15,7 +15,10 @@ import { RegisterDto } from './dto/register.dto';
 import { UserStatus } from 'src/user/user.status';
 import { JwtAuthGuard } from './jwt/access-token.guard';
 import { LoginDto } from './dto/login.dto';
-import { PhoneNumber } from './jwt/phone-number.decorator';
+import { JwtRefreshGuard } from './jwt/refresh-token.guard';
+import { RefreshTokenInfo } from './jwt/refresh-token.decorator';
+import { UserDecorator } from './jwt/user.decorator';
+import { User } from 'src/user/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -25,10 +28,9 @@ export class AuthController {
   @Put('password')
   async createPassword(
     @Body() dto: CreatePasswordDto,
-    @PhoneNumber() phoneNumber: string,
+    @UserDecorator() user: User,
   ) {
-    console.log(phoneNumber);
-    await this.authService.updatePassword(dto.password, phoneNumber);
+    await this.authService.updatePassword(dto.password, user.phoneNumber);
   }
 
   @Post('preregister/admin')
@@ -50,5 +52,40 @@ export class AuthController {
   @HttpCode(200)
   async login(@Body() dto: LoginDto) {
     return this.authService.login(dto.phoneNumber, dto.password);
+  }
+
+  @UseGuards(JwtRefreshGuard)
+  @Post('refresh')
+  @HttpCode(200)
+  async refresh(
+    @RefreshTokenInfo()
+    { phoneNumber, token }: { phoneNumber: string; token: string },
+  ) {
+    return this.authService.refresh(phoneNumber, token);
+  }
+
+  @UseGuards(JwtRefreshGuard)
+  @Post('logout')
+  @HttpCode(200)
+  async logout(
+    @RefreshTokenInfo()
+    { phoneNumber, token }: { phoneNumber: string; token: string },
+  ) {
+    return this.authService.logout(phoneNumber, token);
+  }
+
+  @Post('password/reset/request')
+  @HttpCode(200)
+  async passwordResetRequest(@Body() dto: Pick<PreregisterDto, 'phoneNumber'>) {
+    return this.authService.passwordResetRequest(dto.phoneNumber);
+  }
+
+  @Post('password/reset/confirm')
+  @HttpCode(200)
+  async passwordResetConfirm(@Body() dto: RegisterDto) {
+    return this.authService.passwordResetConfirm(
+      dto.phoneNumber,
+      dto.verificationCode,
+    );
   }
 }

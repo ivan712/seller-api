@@ -2,30 +2,29 @@ import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { UserModule } from 'src/user/user.module';
 import { AccessTokenStrategy } from './jwt/access.strategy';
 import { RolesGuard } from './jwt/roles.guard';
 import { RefreshTokenStrategy } from './jwt/refresh.strategy';
+import { RefreshTokenRepository } from './refresh-token.repository';
+import { RefreshTokenModel } from './refresh-token.model';
+import { SequelizeModule } from '@nestjs/sequelize';
 
 @Module({
   imports: [
     UserModule,
     ConfigModule,
     PassportModule,
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (config: ConfigService) => ({
-        secret: config.get('JWT_SECRET'),
-      }),
-    }),
+    JwtModule.register({}),
+    SequelizeModule.forFeature([RefreshTokenModel]),
   ],
   providers: [
     AuthService,
     AccessTokenStrategy,
     RefreshTokenStrategy,
+    RefreshTokenRepository,
     RolesGuard,
   ],
   controllers: [AuthController],

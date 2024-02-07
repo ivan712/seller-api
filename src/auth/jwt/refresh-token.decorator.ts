@@ -1,8 +1,11 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
-export const PhoneNumber = createParamDecorator(
+export const RefreshTokenInfo = createParamDecorator(
   (data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();
-    return request.user.phoneNumber;
+    return {
+      phoneNumber: request.user.phoneNumber,
+      token: request.user.refreshToken,
+    };
   },
 );

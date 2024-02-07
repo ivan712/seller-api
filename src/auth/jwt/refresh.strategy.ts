@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { LoginDto } from '../dto/login.dto';
+import { Request } from 'express';
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
@@ -11,13 +11,18 @@ export class RefreshTokenStrategy extends PassportStrategy(
 ) {
   constructor(private readonly configService: ConfigService) {
     super({
+      passReqToCallback: true,
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExparation: false,
       secretOrKey: configService.get('JWT_REFRESH_SECRET'),
     });
   }
 
-  async validate({ phoneNumber }: Pick<LoginDto, 'phoneNumber'>) {
-    return { phoneNumber };
+  validate(
+    req: Request,
+    { phoneNumber }: { phoneNumber: string },
+  ): { phoneNumber: string; refreshToken: string } {
+    const refreshToken = req.get('Authorization').replace('Bearer', '').trim();
+    return { phoneNumber, refreshToken };
   }
 }

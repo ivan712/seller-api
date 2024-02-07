@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { IUserRepository } from './interfaces/user-repository.interface';
-import { User } from './user.model';
 import { ICreateUser } from './interfaces/create-user.interface';
 import { UserStatus } from './user.status';
+import { User } from './user.entity';
 
 @Injectable()
 export class UserService {
@@ -30,7 +30,7 @@ export class UserService {
     await this.userRepository.update({ passwordHash }, phoneNumber);
   }
 
-  async updateRefreshToken(refreshToken: string, phoneNumber: string) {
-    await this.userRepository.update({ refreshToken }, phoneNumber);
+  async updateVerificationCode(verificationCode: string, phoneNumber: string) {
+    await this.userRepository.update({ verificationCode }, phoneNumber);
   }
 }

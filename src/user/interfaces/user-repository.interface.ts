@@ -1,5 +1,5 @@
+import { User } from '../user.entity';
 import { ICreateUser } from './create-user.interface';
-import { User } from '../user.model';
 
 export interface IUserRepository {
   create(userInfo: ICreateUser): Promise<User>;
