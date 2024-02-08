@@ -19,7 +19,9 @@ import { JwtRefreshGuard } from './jwt/refresh-token.guard';
 import { RefreshTokenInfo } from './jwt/refresh-token.decorator';
 import { UserDecorator } from './jwt/user.decorator';
 import { User } from 'src/user/user.entity';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(@Inject(AuthService) private authService: AuthService) {}
@@ -35,6 +37,8 @@ export class AuthController {
 
   @Post('preregister/admin')
   async preregisterOrganisationAdmin(@Body() dto: PreregisterDto) {
+    dto.phoneNumber = dto.phoneNumber.replace(/[^!\d]/g, '');
+
     return this.authService.preregister({
       ...dto,
       role: Role.ADMIN,
@@ -45,12 +49,15 @@ export class AuthController {
   @Post('register')
   @HttpCode(200)
   async register(@Body() dto: RegisterDto) {
+    dto.phoneNumber = dto.phoneNumber.replace(/[^!\d]/g, '');
+
     return this.authService.register(dto.verificationCode, dto.phoneNumber);
   }
 
   @Post('login')
   @HttpCode(200)
   async login(@Body() dto: LoginDto) {
+    dto.phoneNumber = dto.phoneNumber.replace(/[^!\d]/g, '');
     return this.authService.login(dto.phoneNumber, dto.password);
   }
 
@@ -69,9 +76,9 @@ export class AuthController {
   @HttpCode(200)
   async logout(
     @RefreshTokenInfo()
-    { phoneNumber, token }: { phoneNumber: string; token: string },
+    { token }: { token: string },
   ) {
-    return this.authService.logout(phoneNumber, token);
+    return this.authService.logout(token);
   }
 
   @Post('password/reset/request')

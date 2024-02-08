@@ -1,33 +1,35 @@
-import { InjectModel } from '@nestjs/sequelize';
+import { Injectable } from '@nestjs/common';
 import { IRefreshTokenRepository } from './interfaces/refresh-token-repository.interface';
-import { RefreshTokenModel } from './refresh-token.model';
+import { PrismaService } from 'src/db/prisma.service';
 
+@Injectable()
 export class RefreshTokenRepository implements IRefreshTokenRepository {
-  constructor(
-    @InjectModel(RefreshTokenModel)
-    private readonly refreshTokenModel: typeof RefreshTokenModel,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async add(token: string, userId: string): Promise<void> {
-    await this.refreshTokenModel.create({ token, userId });
+    await this.prisma.refreshTokenModel.create({
+      data: { token, userId: Number(userId) },
+    });
   }
 
-  async update(token: string, userId: string): Promise<void> {
-    await this.refreshTokenModel.update({ token }, { where: { userId } });
-  }
-
-  async delete(token: string, userId: string): Promise<void> {
-    await this.refreshTokenModel.destroy({
+  async update(oldToken, newToken: string): Promise<void> {
+    await this.prisma.refreshTokenModel.update({
       where: {
-        token,
-        userId,
+        token: oldToken,
+      },
+      data: {
+        token: newToken,
       },
     });
   }
 
-  async getOne(token: string, userId: string): Promise<string | null> {
-    const tokenInfo = await this.refreshTokenModel.findOne({
-      where: { token, userId },
+  async delete(token: string): Promise<void> {
+    await this.prisma.refreshTokenModel.delete({ where: { token } });
+  }
+
+  async getOne(token: string): Promise<string | null> {
+    const tokenInfo = await this.prisma.refreshTokenModel.findUnique({
+      where: { token },
     });
     if (!tokenInfo) return null;
 

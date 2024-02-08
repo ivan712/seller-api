@@ -9,8 +9,7 @@ import { AccessTokenStrategy } from './jwt/access.strategy';
 import { RolesGuard } from './jwt/roles.guard';
 import { RefreshTokenStrategy } from './jwt/refresh.strategy';
 import { RefreshTokenRepository } from './refresh-token.repository';
-import { RefreshTokenModel } from './refresh-token.model';
-import { SequelizeModule } from '@nestjs/sequelize';
+import { PrismaModule } from 'src/db/prisma.module';
 
 @Module({
   imports: [
@@ -18,7 +17,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
     ConfigModule,
     PassportModule,
     JwtModule.register({}),
-    SequelizeModule.forFeature([RefreshTokenModel]),
+    PrismaModule,
   ],
   providers: [
     AuthService,

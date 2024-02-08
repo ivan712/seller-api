@@ -64,23 +64,22 @@ export class AuthService {
   async preregister(
     registerData: Omit<ICreateUser, 'verificationCode'>,
   ): Promise<void> {
-    const verificationCode = await this.generateVerificationCode();
-
     const user = await this.userService.getByPhone(registerData.phoneNumber);
 
     if (user) {
-      if (user.status !== UserStatus.PREREGISTER)
+      if (user && user.status !== UserStatus.PREREGISTER)
         throw new BadRequestException(USER_ALREADY_EXIST);
 
       const newVerificationCode = await this.generateVerificationCode();
       await this.userService.updateVerificationCode(
-        String(newVerificationCode),
+        newVerificationCode,
         registerData.phoneNumber,
       );
 
       return;
     }
 
+    const verificationCode = await this.generateVerificationCode();
     await this.userService.create({
       ...registerData,
       verificationCode,
@@ -175,7 +174,7 @@ export class AuthService {
 
   private async generateVerificationCode() {
     //hardcode
-    return 1235;
+    return String(1235);
   }
 
   async updatePassword(password: string, phoneNumber: string) {
@@ -187,8 +186,7 @@ export class AuthService {
   }
 
   async refresh(phoneNumber: string, token: string): Promise<ITokens> {
-    const user = await this.userService.getByPhone(phoneNumber);
-    const tokenInfo = await this.refreshTokenRepository.getOne(token, user.id);
+    const tokenInfo = await this.refreshTokenRepository.getOne(token);
 
     if (!tokenInfo) throw new ForbiddenException(INVALID_TOKEN);
 
@@ -198,7 +196,7 @@ export class AuthService {
       this.generateRefreshJwt(payload),
     ]);
 
-    await this.refreshTokenRepository.update(refreshToken, user.id);
+    await this.refreshTokenRepository.update(token, refreshToken);
 
     return {
       accessToken,
@@ -206,12 +204,11 @@ export class AuthService {
     };
   }
 
-  async logout(phoneNumber: string, token: string) {
-    const user = await this.userService.getByPhone(phoneNumber);
-    const tokenInfo = await this.refreshTokenRepository.getOne(token, user.id);
+  async logout(token: string) {
+    const tokenInfo = await this.refreshTokenRepository.getOne(token);
 
     if (!tokenInfo) throw new BadRequestException(INVALID_TOKEN);
 
-    await this.refreshTokenRepository.delete(token, user.id);
+    await this.refreshTokenRepository.delete(token);
   }
 }

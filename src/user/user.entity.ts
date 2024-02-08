@@ -1,6 +1,6 @@
 import { Role } from './roles.enum';
 import { UserStatus } from './user.status';
-import { UserModel } from './user.model';
+import { User as UserModel } from '@prisma/client';
 
 export class User {
   id: string;
@@ -10,13 +10,13 @@ export class User {
   passwordHash?: string;
   verificationCode?: string;
   status?: UserStatus;
-  codeExpiredAt?: Date;
+  codeExpiredAt?: string;
 
   constructor({ pgDoc }: { pgDoc: UserModel }) {
-    this.id = pgDoc.id;
+    this.id = String(pgDoc.id);
     this.name = pgDoc.name;
     this.phoneNumber = pgDoc.phoneNumber;
-    this.role = pgDoc.role;
+    this.role = pgDoc.role as Role;
     this.passwordHash = pgDoc.passwordHash;
     this.verificationCode = pgDoc.verificationCode;
     this.status = pgDoc.status as UserStatus;

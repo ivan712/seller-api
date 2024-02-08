@@ -5,6 +5,6 @@ export interface ICreateUser {
   phoneNumber: string;
   name: string;
   role: Role;
-  verificationCode: number;
+  verificationCode: string;
   status: UserStatus;
 }
