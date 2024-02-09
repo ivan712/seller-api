@@ -19,6 +19,6 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate({ phoneNumber }: Pick<LoginDto, 'phoneNumber'>) {
-    return this.userService.getByPhone(phoneNumber);
+    return phoneNumber;
   }
 }

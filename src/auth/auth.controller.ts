@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   HttpCode,
+  HttpStatus,
   Inject,
   Post,
   Put,
@@ -10,16 +11,14 @@ import {
 import { CreatePasswordDto } from './dto/create-password.dto';
 import { AuthService } from './auth.service';
 import { PreregisterDto } from './dto/pre-register.dto';
-import { Role } from 'src/user/roles.enum';
 import { RegisterDto } from './dto/register.dto';
-import { UserStatus } from 'src/user/user.status';
 import { JwtAuthGuard } from './jwt/access-token.guard';
 import { LoginDto } from './dto/login.dto';
 import { JwtRefreshGuard } from './jwt/refresh-token.guard';
 import { RefreshTokenInfo } from './jwt/refresh-token.decorator';
-import { UserDecorator } from './jwt/user.decorator';
-import { User } from 'src/user/user.entity';
-import { ApiTags } from '@nestjs/swagger';
+import { PhoneNumberDecorator } from './jwt/phone-number.decorator';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -30,28 +29,37 @@ export class AuthController {
   @Put('password')
   async createPassword(
     @Body() dto: CreatePasswordDto,
-    @UserDecorator() user: User,
+    @PhoneNumberDecorator() phoneNumber: string,
   ) {
-    await this.authService.updatePassword(dto.password, user.phoneNumber);
+    await this.authService.updatePassword(dto.password, phoneNumber);
   }
 
-  @Post('preregister/admin')
-  async preregisterOrganisationAdmin(@Body() dto: PreregisterDto) {
+  @Put('preregister')
+  @ApiOperation({ summary: 'Updates a note with specified id' })
+  // @ApiBody({
+  //   schema: PreregisterDto,
+  //   required: true,
+  //   description: 'Note identifier',
+  // })
+  // @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: Note })
+  @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
+  async preregister(@Body() dto: PreregisterDto) {
     dto.phoneNumber = dto.phoneNumber.replace(/[^!\d]/g, '');
 
     return this.authService.preregister({
       ...dto,
-      role: Role.ADMIN,
-      status: UserStatus.PREREGISTER,
     });
   }
 
   @Post('register')
-  @HttpCode(200)
+  @HttpCode(201)
   async register(@Body() dto: RegisterDto) {
     dto.phoneNumber = dto.phoneNumber.replace(/[^!\d]/g, '');
 
-    return this.authService.register(dto.verificationCode, dto.phoneNumber);
+    return this.authService.register(
+      { phoneNumber: dto.phoneNumber, name: dto.name, role: dto.role },
+      dto.validationCode,
+    );
   }
 
   @Post('login')
@@ -84,15 +92,17 @@ export class AuthController {
   @Post('password/reset/request')
   @HttpCode(200)
   async passwordResetRequest(@Body() dto: Pick<PreregisterDto, 'phoneNumber'>) {
+    dto.phoneNumber = dto.phoneNumber.replace(/[^!\d]/g, '');
     return this.authService.passwordResetRequest(dto.phoneNumber);
   }
 
   @Post('password/reset/confirm')
   @HttpCode(200)
-  async passwordResetConfirm(@Body() dto: RegisterDto) {
+  async passwordResetConfirm(@Body() dto: ResetPasswordDto) {
+    dto.phoneNumber = dto.phoneNumber.replace(/[^!\d]/g, '');
     return this.authService.passwordResetConfirm(
       dto.phoneNumber,
-      dto.verificationCode,
+      dto.validationCode,
     );
   }
 }

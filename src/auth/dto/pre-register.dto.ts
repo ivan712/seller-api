@@ -1,9 +1,6 @@
-import { IsPhoneNumber, IsString } from 'class-validator';
+import { IsPhoneNumber } from 'class-validator';
 
 export class PreregisterDto {
   @IsPhoneNumber()
   phoneNumber: string;
-
-  @IsString()
-  name: string;
 }

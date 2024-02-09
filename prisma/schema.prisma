@@ -15,26 +15,24 @@ enum Role {
   admin
 }
 
-enum Status {
-  preregister
-  register
-}
-
 model User {
   id    Int     @id @default(autoincrement())
   phoneNumber String  @unique
   name  String?
   organisationId String?
-  verificationCode String?
-  codeExpiredAt String?
   role Role
   passwordHash String?
-  status Status
 }
 
 model RefreshTokenModel {
   id    Int     @id @default(autoincrement())
   userId Int
   token String  @unique
+}
+
+model ValidationCode {
+  phoneNumber String @id
+  codeHash String
+  expiredAt String
 }
 

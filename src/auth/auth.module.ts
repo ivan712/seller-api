@@ -10,6 +10,7 @@ import { RolesGuard } from './jwt/roles.guard';
 import { RefreshTokenStrategy } from './jwt/refresh.strategy';
 import { RefreshTokenRepository } from './refresh-token.repository';
 import { PrismaModule } from 'src/db/prisma.module';
+import { ValidationCodeRepository } from './validation-code.repository';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { PrismaModule } from 'src/db/prisma.module';
     AccessTokenStrategy,
     RefreshTokenStrategy,
     RefreshTokenRepository,
+    ValidationCodeRepository,
     RolesGuard,
   ],
   controllers: [AuthController],

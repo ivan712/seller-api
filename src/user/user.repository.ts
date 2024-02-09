@@ -14,7 +14,6 @@ export class UserRepository implements IUserRepository {
         data: {
           ...userInfo,
           organisationId: null,
-          codeExpiredAt: null,
           passwordHash: null,
         },
       }),

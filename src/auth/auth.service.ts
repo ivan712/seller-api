@@ -11,7 +11,6 @@ import { IPayloadData } from './interfaces/payload-data.interface';
 import { ITokens } from './interfaces/access-token.interface';
 import { JwtService } from '@nestjs/jwt';
 import { ICreateUser } from 'src/user/interfaces/create-user.interface';
-import { UserStatus } from 'src/user/user.status';
 import { compare } from 'bcryptjs';
 import { ConfigService } from '@nestjs/config';
 import { RefreshTokenRepository } from './refresh-token.repository';
@@ -21,6 +20,8 @@ import {
   USER_ALREADY_EXIST,
   USER_NOT_FOUND,
 } from 'src/exception-messages.constant';
+import { ValidationCode } from './validation-code';
+import { ValidationCodeRepository } from './validation-code.repository';
 
 @Injectable()
 export class AuthService {
@@ -30,6 +31,8 @@ export class AuthService {
     @Inject(ConfigService) private readonly configService: ConfigService,
     @Inject(RefreshTokenRepository)
     private readonly refreshTokenRepository: RefreshTokenRepository,
+    @Inject(ValidationCodeRepository)
+    private readonly validationCodeRepository: ValidationCodeRepository,
   ) {}
 
   private async generateAccessJwt(payloadData: IPayloadData): Promise<string> {
@@ -61,46 +64,33 @@ export class AuthService {
     });
   }
 
-  async preregister(
-    registerData: Omit<ICreateUser, 'verificationCode'>,
-  ): Promise<void> {
+  async preregister(registerData: { phoneNumber: string }): Promise<void> {
     const user = await this.userService.getByPhone(registerData.phoneNumber);
 
-    if (user) {
-      if (user && user.status !== UserStatus.PREREGISTER)
-        throw new BadRequestException(USER_ALREADY_EXIST);
+    if (user) throw new BadRequestException(USER_ALREADY_EXIST);
 
-      const newVerificationCode = await this.generateVerificationCode();
-      await this.userService.updateVerificationCode(
-        newVerificationCode,
-        registerData.phoneNumber,
-      );
-
-      return;
-    }
-
-    const verificationCode = await this.generateVerificationCode();
-    await this.userService.create({
-      ...registerData,
-      verificationCode,
-    });
+    await this.upsertValidationCode(registerData.phoneNumber);
   }
 
-  async getPasswordUpdateCode(phoneNumber: string) {
-    const newVerificationCode = await this.generateVerificationCode();
-    await this.userService.updateVerificationCode(
-      String(newVerificationCode),
-      phoneNumber,
-    );
+  async upsertValidationCode(phoneNumber: string): Promise<void> {
+    let newValidationCode = new ValidationCode();
+    newValidationCode = await newValidationCode.generate(phoneNumber);
+    await this.validationCodeRepository.upsertCode(newValidationCode);
   }
 
   async getPasswordUpdateToken(
-    verificationCode1: string,
-    verificationCode2: string,
+    code: string,
     phoneNumber: string,
   ): Promise<Pick<ITokens, 'accessToken'>> {
-    if (verificationCode1 !== verificationCode2)
-      throw new ForbiddenException(INCORRECT_USER_NAME_OR_PASSWORD);
+    const validationCode = await this.validationCodeRepository.get(phoneNumber);
+
+    if (!validationCode)
+      throw new BadRequestException(INCORRECT_USER_NAME_OR_PASSWORD);
+
+    const isCodeValid = await validationCode.validate(code);
+
+    if (!isCodeValid)
+      throw new BadRequestException(INCORRECT_USER_NAME_OR_PASSWORD);
 
     const accessToken = await this.generatePasswordUpdateJwt({
       phoneNumber,
@@ -111,42 +101,33 @@ export class AuthService {
 
   async passwordResetRequest(phoneNumber: string) {
     const user = await this.userService.getByPhone(phoneNumber);
-    if (!user || user.status !== UserStatus.REGISTER)
-      throw new NotFoundException(USER_NOT_FOUND);
+    console.log(user);
+    if (!user) throw new NotFoundException(USER_NOT_FOUND);
 
-    await this.getPasswordUpdateCode(phoneNumber);
+    await this.upsertValidationCode(phoneNumber);
   }
 
   async passwordResetConfirm(phoneNumber: string, code: string) {
     const user = await this.userService.getByPhone(phoneNumber);
-    if (!user || user.status !== UserStatus.REGISTER)
-      throw new BadRequestException(INCORRECT_USER_NAME_OR_PASSWORD);
+    if (!user) throw new BadRequestException(INCORRECT_USER_NAME_OR_PASSWORD);
 
-    return this.getPasswordUpdateToken(
-      code,
-      user.verificationCode,
-      phoneNumber,
-    );
+    return this.getPasswordUpdateToken(code, phoneNumber);
   }
 
   async register(
-    verificationCode: string,
-    phoneNumber: string,
+    userData: ICreateUser,
+    validationCode: string,
   ): Promise<Pick<ITokens, 'accessToken'>> {
-    const user = await this.userService.getByPhone(phoneNumber);
+    const user = await this.userService.getByPhone(userData.phoneNumber);
 
-    if (!user) throw new BadRequestException(USER_NOT_FOUND);
-
-    if (user.status !== UserStatus.PREREGISTER)
-      throw new BadRequestException(USER_ALREADY_EXIST);
+    if (user) throw new BadRequestException(USER_ALREADY_EXIST);
 
     const token = await this.getPasswordUpdateToken(
-      user.verificationCode,
-      verificationCode,
-      phoneNumber,
+      validationCode,
+      userData.phoneNumber,
     );
 
-    await this.userService.confirmRegistration(phoneNumber);
+    await this.userService.create(userData);
 
     return token;
   }
@@ -170,11 +151,6 @@ export class AuthService {
     await this.refreshTokenRepository.add(refreshToken, user.id);
 
     return { accessToken, refreshToken };
-  }
-
-  private async generateVerificationCode() {
-    //hardcode
-    return String(1235);
   }
 
   async updatePassword(password: string, phoneNumber: string) {
@@ -209,6 +185,6 @@ export class AuthService {
 
     if (!tokenInfo) throw new BadRequestException(INVALID_TOKEN);
 
-    await this.refreshTokenRepository.delete(token);
+    await this.refreshTokenRepository.deleteOne(token);
   }
 }
