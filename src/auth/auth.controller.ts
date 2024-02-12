@@ -16,9 +16,9 @@ import { JwtAuthGuard } from './jwt/access-token.guard';
 import { LoginDto } from './dto/login.dto';
 import { JwtRefreshGuard } from './jwt/refresh-token.guard';
 import { RefreshTokenInfo } from './jwt/refresh-token.decorator';
-import { PhoneNumberDecorator } from './jwt/phone-number.decorator';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { AccessTokenDecorator } from './jwt/access-token.decorator';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -29,9 +29,14 @@ export class AuthController {
   @Put('password')
   async createPassword(
     @Body() dto: CreatePasswordDto,
-    @PhoneNumberDecorator() phoneNumber: string,
+    @AccessTokenDecorator()
+    { accessToken, phoneNumber }: { accessToken: string; phoneNumber: string },
   ) {
-    await this.authService.updatePassword(dto.password, phoneNumber);
+    await this.authService.updatePassword(
+      dto.password,
+      phoneNumber,
+      accessToken,
+    );
   }
 
   @Put('preregister')

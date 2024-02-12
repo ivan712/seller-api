@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { IRefreshTokenRepository } from './interfaces/refresh-token-repository.interface';
+import { IRefreshTokenRepository } from '../interfaces/refresh-token-repository.interface';
 import { PrismaService } from 'src/db/prisma.service';
 
 @Injectable()

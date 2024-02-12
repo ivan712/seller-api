@@ -1,6 +1,7 @@
-import { ValidationCode } from '../validation-code';
+import { DataType, ValidationData } from '../validation-data';
 
-export interface IValidationCodeRepository {
-  get(phoneNumber: string): Promise<ValidationCode>;
-  upsertCode(validationCode: ValidationCode): Promise<void>;
+export interface IValidationDataRepository {
+  get(phoneNumber: string, dataType: DataType): Promise<ValidationData>;
+  upsertData(validationCode: ValidationData): Promise<void>;
+  deleteOne(phoneNumber: string, dataType: DataType);
 }

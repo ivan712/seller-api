@@ -6,62 +6,40 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
-import { genSalt, hash } from 'bcryptjs';
-import { IPayloadData } from './interfaces/payload-data.interface';
 import { ITokens } from './interfaces/access-token.interface';
-import { JwtService } from '@nestjs/jwt';
 import { ICreateUser } from 'src/user/interfaces/create-user.interface';
-import { compare } from 'bcryptjs';
-import { ConfigService } from '@nestjs/config';
-import { RefreshTokenRepository } from './refresh-token.repository';
+import { RefreshTokenRepository } from './repositories/refresh-token.repository';
 import {
+  FORBIDDEN,
   INCORRECT_USER_NAME_OR_PASSWORD,
   INVALID_TOKEN,
   USER_ALREADY_EXIST,
   USER_NOT_FOUND,
 } from 'src/exception-messages.constant';
-import { ValidationCode } from './validation-code';
-import { ValidationCodeRepository } from './validation-code.repository';
+import { DataType, ValidationData } from './validation-data';
+import { ValidationDataRepository } from './repositories/validation-data.repository';
+import { JwtTokensService } from './jwt/jwt-token.service';
+import { CryptoService } from './crypto.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
+  private verificationCodeLength;
+
   constructor(
-    @Inject(UserService) private readonly userService: UserService,
-    @Inject(JwtService) private readonly jwtService: JwtService,
     @Inject(ConfigService) private readonly configService: ConfigService,
+    @Inject(UserService) private readonly userService: UserService,
     @Inject(RefreshTokenRepository)
     private readonly refreshTokenRepository: RefreshTokenRepository,
-    @Inject(ValidationCodeRepository)
-    private readonly validationCodeRepository: ValidationCodeRepository,
-  ) {}
-
-  private async generateAccessJwt(payloadData: IPayloadData): Promise<string> {
-    return this.jwtService.signAsync(payloadData, {
-      expiresIn: Number(
-        this.configService.get<number>('ACCESS_TOKEN_EXPIRE_TIME'),
-      ),
-      secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
-    });
-  }
-
-  private async generatePasswordUpdateJwt(
-    payloadData: IPayloadData,
-  ): Promise<string> {
-    return this.jwtService.signAsync(payloadData, {
-      expiresIn: Number(
-        this.configService.get<number>('PASSWORD_UPDATE_TOKEN_EXPIRE'),
-      ),
-      secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
-    });
-  }
-
-  private async generateRefreshJwt(payloadData: IPayloadData): Promise<string> {
-    return this.jwtService.signAsync(payloadData, {
-      expiresIn: Number(
-        this.configService.get<number>('REFRESH_TOKEN_EXPIRE_TIME'),
-      ),
-      secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
-    });
+    @Inject(ValidationDataRepository)
+    private readonly validationDataRepository: ValidationDataRepository,
+    @Inject(JwtTokensService)
+    private readonly jwtTokensService: JwtTokensService,
+    @Inject(CryptoService) private readonly cryptoService: CryptoService,
+  ) {
+    this.verificationCodeLength = this.configService.get(
+      'VERIFICATION_CODE_LENGTH',
+    );
   }
 
   async preregister(registerData: { phoneNumber: string }): Promise<void> {
@@ -70,38 +48,76 @@ export class AuthService {
     if (user) throw new BadRequestException(USER_ALREADY_EXIST);
 
     await this.upsertValidationCode(registerData.phoneNumber);
+
+    return;
   }
 
   async upsertValidationCode(phoneNumber: string): Promise<void> {
-    let newValidationCode = new ValidationCode();
-    newValidationCode = await newValidationCode.generate(phoneNumber);
-    await this.validationCodeRepository.upsertCode(newValidationCode);
+    const randomNumber = await this.cryptoService.generateRandomInt();
+    const data = String(randomNumber).padStart(
+      this.verificationCodeLength,
+      '0',
+    );
+    console.log('code', data);
+    const dataHash = await this.cryptoService.createDataHash(data);
+    const expiredAt = String(new Date());
+    const dataType = DataType.validationCode;
+    const validationData = new ValidationData({
+      dataHash,
+      expiredAt,
+      dataType,
+      phoneNumber,
+    });
+    await this.validationDataRepository.upsertData(validationData);
   }
 
-  async getPasswordUpdateToken(
+  async generatePasswordUpdateToken(
     code: string,
     phoneNumber: string,
   ): Promise<Pick<ITokens, 'accessToken'>> {
-    const validationCode = await this.validationCodeRepository.get(phoneNumber);
+    const validationCode = await this.validationDataRepository.get(
+      phoneNumber,
+      DataType.validationCode,
+    );
 
     if (!validationCode)
       throw new BadRequestException(INCORRECT_USER_NAME_OR_PASSWORD);
 
-    const isCodeValid = await validationCode.validate(code);
+    const isCodeValid = await this.cryptoService.validateData(
+      code,
+      validationCode.getDataHash(),
+    );
 
     if (!isCodeValid)
       throw new BadRequestException(INCORRECT_USER_NAME_OR_PASSWORD);
 
-    const accessToken = await this.generatePasswordUpdateJwt({
+    await this.validationDataRepository.deleteOne(
+      phoneNumber,
+      DataType.validationCode,
+    );
+
+    const accessToken = await this.jwtTokensService.generateUpdateDataJwt({
       phoneNumber,
     });
+
+    const accessTokenHash =
+      await this.cryptoService.createDataHash(accessToken);
+
+    await this.validationDataRepository.upsertData(
+      new ValidationData({
+        phoneNumber,
+        expiredAt: String(new Date()),
+        dataType: DataType.passwordUpdateToken,
+        dataHash: accessTokenHash,
+      }),
+    );
 
     return { accessToken };
   }
 
   async passwordResetRequest(phoneNumber: string) {
     const user = await this.userService.getByPhone(phoneNumber);
-    console.log(user);
+
     if (!user) throw new NotFoundException(USER_NOT_FOUND);
 
     await this.upsertValidationCode(phoneNumber);
@@ -111,7 +127,7 @@ export class AuthService {
     const user = await this.userService.getByPhone(phoneNumber);
     if (!user) throw new BadRequestException(INCORRECT_USER_NAME_OR_PASSWORD);
 
-    return this.getPasswordUpdateToken(code, phoneNumber);
+    return this.generatePasswordUpdateToken(code, phoneNumber);
   }
 
   async register(
@@ -122,7 +138,7 @@ export class AuthService {
 
     if (user) throw new BadRequestException(USER_ALREADY_EXIST);
 
-    const token = await this.getPasswordUpdateToken(
+    const token = await this.generatePasswordUpdateToken(
       validationCode,
       userData.phoneNumber,
     );
@@ -137,15 +153,18 @@ export class AuthService {
     if (!user || !user.passwordHash)
       throw new BadRequestException(INCORRECT_USER_NAME_OR_PASSWORD);
 
-    const isPasswordValid = await compare(password, user.passwordHash);
+    const isPasswordValid = await this.cryptoService.validateData(
+      password,
+      user.passwordHash,
+    );
     if (!isPasswordValid)
       throw new BadRequestException(INCORRECT_USER_NAME_OR_PASSWORD);
     const payload = {
       phoneNumber,
     };
     const [accessToken, refreshToken] = await Promise.all([
-      this.generateAccessJwt(payload),
-      this.generateRefreshJwt(payload),
+      this.jwtTokensService.generateAccessJwt(payload),
+      this.jwtTokensService.generateRefreshJwt(payload),
     ]);
 
     await this.refreshTokenRepository.add(refreshToken, user.id);
@@ -153,10 +172,31 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  async updatePassword(password: string, phoneNumber: string) {
-    //hardcode
-    const salt = await genSalt(10);
-    const passwordHash = await hash(password, salt);
+  async updatePassword(
+    password: string,
+    phoneNumber: string,
+    accessToken: string,
+  ) {
+    const updateToken = await this.validationDataRepository.get(
+      phoneNumber,
+      DataType.passwordUpdateToken,
+    );
+
+    if (!updateToken) throw new ForbiddenException(FORBIDDEN);
+
+    const isTokenValid = await this.cryptoService.validateData(
+      accessToken,
+      updateToken.getDataHash(),
+    );
+
+    if (!isTokenValid) throw new ForbiddenException(FORBIDDEN);
+
+    await this.validationDataRepository.deleteOne(
+      phoneNumber,
+      DataType.passwordUpdateToken,
+    );
+
+    const passwordHash = await this.cryptoService.createDataHash(password);
 
     await this.userService.setPassword(passwordHash, phoneNumber);
   }
@@ -168,8 +208,8 @@ export class AuthService {
 
     const payload = { phoneNumber };
     const [accessToken, refreshToken] = await Promise.all([
-      this.generateAccessJwt(payload),
-      this.generateRefreshJwt(payload),
+      this.jwtTokensService.generateAccessJwt(payload),
+      this.jwtTokensService.generateRefreshJwt(payload),
     ]);
 
     await this.refreshTokenRepository.update(token, refreshToken);

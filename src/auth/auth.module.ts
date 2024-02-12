@@ -8,9 +8,11 @@ import { UserModule } from 'src/user/user.module';
 import { AccessTokenStrategy } from './jwt/access.strategy';
 import { RolesGuard } from './jwt/roles.guard';
 import { RefreshTokenStrategy } from './jwt/refresh.strategy';
-import { RefreshTokenRepository } from './refresh-token.repository';
+import { RefreshTokenRepository } from './repositories/refresh-token.repository';
 import { PrismaModule } from 'src/db/prisma.module';
-import { ValidationCodeRepository } from './validation-code.repository';
+import { ValidationDataRepository } from './repositories/validation-data.repository';
+import { JwtTokensService } from './jwt/jwt-token.service';
+import { CryptoService } from './crypto.service';
 
 @Module({
   imports: [
@@ -24,9 +26,11 @@ import { ValidationCodeRepository } from './validation-code.repository';
     AuthService,
     AccessTokenStrategy,
     RefreshTokenStrategy,
+    JwtTokensService,
     RefreshTokenRepository,
-    ValidationCodeRepository,
+    ValidationDataRepository,
     RolesGuard,
+    CryptoService,
   ],
   controllers: [AuthController],
 })

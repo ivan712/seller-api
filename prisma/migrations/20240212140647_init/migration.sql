@@ -1,6 +1,9 @@
 -- CreateEnum
 CREATE TYPE "Role" AS ENUM ('user', 'admin');
 
+-- CreateEnum
+CREATE TYPE "DataType" AS ENUM ('validationCode', 'passwordUpdateToken');
+
 -- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
@@ -23,12 +26,13 @@ CREATE TABLE "RefreshTokenModel" (
 );
 
 -- CreateTable
-CREATE TABLE "ValidationCode" (
+CREATE TABLE "ValidationData" (
     "phoneNumber" TEXT NOT NULL,
-    "codeHash" TEXT NOT NULL,
+    "dataHash" TEXT NOT NULL,
     "expiredAt" TEXT NOT NULL,
+    "dataType" "DataType" NOT NULL,
 
-    CONSTRAINT "ValidationCode_pkey" PRIMARY KEY ("phoneNumber")
+    CONSTRAINT "ValidationData_pkey" PRIMARY KEY ("phoneNumber","dataType")
 );
 
 -- CreateIndex

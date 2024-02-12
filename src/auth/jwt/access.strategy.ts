@@ -4,6 +4,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { LoginDto } from '../dto/login.dto';
 import { UserService } from 'src/user/user.service';
+import { Request } from 'express';
 
 @Injectable()
 export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -12,13 +13,15 @@ export class AccessTokenStrategy extends PassportStrategy(Strategy, 'jwt') {
     @Inject(UserService) private readonly userService: UserService,
   ) {
     super({
+      passReqToCallback: true,
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExparation: false,
       secretOrKey: configService.get('JWT_ACCESS_SECRET'),
     });
   }
 
-  async validate({ phoneNumber }: Pick<LoginDto, 'phoneNumber'>) {
-    return phoneNumber;
+  async validate(req: Request, { phoneNumber }: Pick<LoginDto, 'phoneNumber'>) {
+    const accessToken = req.get('Authorization').split(' ')[1].trim();
+    return { phoneNumber, accessToken };
   }
 }

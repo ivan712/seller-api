@@ -22,7 +22,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
     req: Request,
     { phoneNumber }: { phoneNumber: string },
   ): { phoneNumber: string; refreshToken: string } {
-    const refreshToken = req.get('Authorization').replace('Bearer', '').trim();
+    const refreshToken = req.get('Authorization').split(' ')[1].trim();
     return { phoneNumber, refreshToken };
   }
 }

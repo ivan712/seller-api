@@ -3,3 +3,4 @@ export const USER_ALREADY_EXIST = 'Пользователь уже зареги�
 export const INCORRECT_USER_NAME_OR_PASSWORD =
   'Неверное имя пользователя или пароль';
 export const INVALID_TOKEN = 'Невалидный токен';
+export const FORBIDDEN = 'Forbidden';

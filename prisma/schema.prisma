@@ -30,9 +30,16 @@ model RefreshTokenModel {
   token String  @unique
 }
 
-model ValidationCode {
-  phoneNumber String @id
-  codeHash String
+enum DataType {
+  validationCode
+  passwordUpdateToken
+}
+
+model ValidationData {
+  phoneNumber String
+  dataHash String
   expiredAt String
+  dataType DataType
+  @@id([phoneNumber, dataType])
 }
 
