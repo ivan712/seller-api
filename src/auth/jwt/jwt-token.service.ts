@@ -13,7 +13,7 @@ export class JwtTokensService {
   async generateAccessJwt(payloadData: IPayloadData): Promise<string> {
     return this.jwtService.signAsync(payloadData, {
       expiresIn: Number(
-        this.configService.get<number>('ACCESS_TOKEN_EXPIRE_TIME'),
+        this.configService.get<number>('ACCESS_TOKEN_EXPIRES_AT'),
       ),
       secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
     });
@@ -22,7 +22,7 @@ export class JwtTokensService {
   async generateUpdateDataJwt(payloadData: IPayloadData): Promise<string> {
     return this.jwtService.signAsync(payloadData, {
       expiresIn: Number(
-        this.configService.get<number>('PASSWORD_UPDATE_TOKEN_EXPIRE'),
+        this.configService.get<number>('PASSWORD_UPDATE_TOKEN_EXPIRES_AT'),
       ),
       secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
     });
@@ -31,7 +31,7 @@ export class JwtTokensService {
   async generateRefreshJwt(payloadData: IPayloadData): Promise<string> {
     return this.jwtService.signAsync(payloadData, {
       expiresIn: Number(
-        this.configService.get<number>('REFRESH_TOKEN_EXPIRE_TIME'),
+        this.configService.get<number>('REFRESH_TOKEN_EXPIRES_AT'),
       ),
       secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
     });

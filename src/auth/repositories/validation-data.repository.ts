@@ -38,13 +38,11 @@ export class ValidationDataRepository implements IValidationDataRepository {
         phoneNumber: validationData.getPhoneNumber(),
         dataHash: validationData.getDataHash(),
         dataType: validationData.getDataType(),
-        //hardcode
-        expiredAt: String(validationData.getExpiredAt()),
+        expiredAt: validationData.getExpiredAt().toISOString(),
       },
       update: {
         dataHash: validationData.getDataHash(),
-        //hardcode
-        expiredAt: String(validationData.getExpiredAt()),
+        expiredAt: validationData.getExpiredAt().toISOString(),
       },
     });
   }

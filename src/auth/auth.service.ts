@@ -25,6 +25,8 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class AuthService {
   private verificationCodeLength;
+  private verificationCodeExpireAt;
+  private passwordUpdateTokenExpireAt;
 
   constructor(
     @Inject(ConfigService) private readonly configService: ConfigService,
@@ -37,8 +39,14 @@ export class AuthService {
     private readonly jwtTokensService: JwtTokensService,
     @Inject(CryptoService) private readonly cryptoService: CryptoService,
   ) {
-    this.verificationCodeLength = this.configService.get(
-      'VERIFICATION_CODE_LENGTH',
+    this.verificationCodeLength = Number(
+      this.configService.get('VERIFICATION_CODE_LENGTH'),
+    );
+    this.verificationCodeExpireAt = this.configService.get(
+      'VERIFICATION_CODE_EXPIRES_AT',
+    );
+    this.passwordUpdateTokenExpireAt = this.configService.get(
+      'PASSWORD_UPDATE_TOKEN_EXPIRES_AT',
     );
   }
 
@@ -60,11 +68,12 @@ export class AuthService {
     );
     console.log('code', data);
     const dataHash = await this.cryptoService.createDataHash(data);
-    const expiredAt = String(new Date());
     const dataType = DataType.validationCode;
     const validationData = new ValidationData({
       dataHash,
-      expiredAt,
+      expiredAt: new Date(
+        new Date().getTime() + this.verificationCodeExpireAt * 1000,
+      ),
       dataType,
       phoneNumber,
     });
@@ -83,11 +92,14 @@ export class AuthService {
     if (!validationCode)
       throw new BadRequestException(INCORRECT_USER_NAME_OR_PASSWORD);
 
+    const isNotCodeExpired = new Date() <= validationCode.getExpiredAt();
+    if (!isNotCodeExpired)
+      throw new BadRequestException(INCORRECT_USER_NAME_OR_PASSWORD);
+
     const isCodeValid = await this.cryptoService.validateData(
       code,
       validationCode.getDataHash(),
     );
-
     if (!isCodeValid)
       throw new BadRequestException(INCORRECT_USER_NAME_OR_PASSWORD);
 
@@ -106,7 +118,9 @@ export class AuthService {
     await this.validationDataRepository.upsertData(
       new ValidationData({
         phoneNumber,
-        expiredAt: String(new Date()),
+        expiredAt: new Date(
+          new Date().getTime() + this.passwordUpdateTokenExpireAt * 1000,
+        ),
         dataType: DataType.passwordUpdateToken,
         dataHash: accessTokenHash,
       }),

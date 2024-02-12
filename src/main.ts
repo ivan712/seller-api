@@ -17,7 +17,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Side Seller Service')
-    .setDescription('The cats API description')
+    .setDescription('The side-seller API description')
     .setVersion('1.0')
     .addTag('Side Seller Api')
     .build();

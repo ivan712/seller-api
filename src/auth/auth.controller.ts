@@ -27,6 +27,23 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Put('password')
+  @ApiOperation({ summary: 'Update password' })
+  @ApiResponse({
+    status: 200,
+    description: 'Password has been changed succesfully',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'password is not strong enough',
+  })
   async createPassword(
     @Body() dto: CreatePasswordDto,
     @AccessTokenDecorator()

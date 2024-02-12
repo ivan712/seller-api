@@ -31,7 +31,6 @@ export class UserRepository implements IUserRepository {
     userData: Partial<Omit<User, 'id'>>,
     phoneNumber: string,
   ): Promise<void> {
-    console.log(userData);
     await this.prisma.user.update({
       data: { ...userData },
       where: { phoneNumber },

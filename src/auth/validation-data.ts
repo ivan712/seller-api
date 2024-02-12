@@ -7,7 +7,7 @@ export enum DataType {
 
 export class ValidationData {
   private dataHash: string;
-  private expiredAt: String;
+  private expiredAt: Date;
   private phoneNumber: string;
   private dataType: DataType;
 
@@ -22,7 +22,7 @@ export class ValidationData {
     return this.dataHash;
   }
 
-  getExpiredAt(): String {
+  getExpiredAt(): Date {
     return this.expiredAt;
   }
 
