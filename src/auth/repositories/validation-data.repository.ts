@@ -36,12 +36,12 @@ export class ValidationDataRepository implements IValidationDataRepository {
       },
       create: {
         phoneNumber: validationData.getPhoneNumber(),
-        dataHash: validationData.getDataHash(),
+        data: validationData.getData(),
         dataType: validationData.getDataType(),
         expiredAt: validationData.getExpiredAt().toISOString(),
       },
       update: {
-        dataHash: validationData.getDataHash(),
+        data: validationData.getData(),
         expiredAt: validationData.getExpiredAt().toISOString(),
       },
     });

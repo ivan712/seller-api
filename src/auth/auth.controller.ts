@@ -12,20 +12,19 @@ import { CreatePasswordDto } from './dto/create-password.dto';
 import { AuthService } from './auth.service';
 import { PreregisterDto } from './dto/pre-register.dto';
 import { RegisterDto } from './dto/register.dto';
-import { JwtAuthGuard } from './jwt/access-token.guard';
 import { LoginDto } from './dto/login.dto';
-import { JwtRefreshGuard } from './jwt/refresh-token.guard';
-import { RefreshTokenInfo } from './jwt/refresh-token.decorator';
+import { JwtRefreshGuard } from './jwt/guards/refresh-token.guard';
+import { TokenInfo } from './jwt/decorators/token.decorator';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { AccessTokenDecorator } from './jwt/access-token.decorator';
+import { JwtUpdateGuard } from './jwt/guards/update-data-token.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(@Inject(AuthService) private authService: AuthService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtUpdateGuard)
   @Put('password')
   @ApiOperation({ summary: 'Update password' })
   @ApiResponse({
@@ -44,26 +43,16 @@ export class AuthController {
     status: 404,
     description: 'password is not strong enough',
   })
-  async createPassword(
+  async updatePassword(
     @Body() dto: CreatePasswordDto,
-    @AccessTokenDecorator()
-    { accessToken, phoneNumber }: { accessToken: string; phoneNumber: string },
+    @TokenInfo()
+    { tokenId, phoneNumber }: { tokenId: string; phoneNumber: string },
   ) {
-    await this.authService.updatePassword(
-      dto.password,
-      phoneNumber,
-      accessToken,
-    );
+    await this.authService.updatePassword(dto.password, phoneNumber, tokenId);
   }
 
   @Put('preregister')
   @ApiOperation({ summary: 'Updates a note with specified id' })
-  // @ApiBody({
-  //   schema: PreregisterDto,
-  //   required: true,
-  //   description: 'Note identifier',
-  // })
-  // @ApiResponse({ status: HttpStatus.OK, description: 'Success', type: Note })
   @ApiResponse({ status: HttpStatus.BAD_REQUEST, description: 'Bad Request' })
   async preregister(@Body() dto: PreregisterDto) {
     dto.phoneNumber = dto.phoneNumber.replace(/[^!\d]/g, '');
@@ -95,20 +84,20 @@ export class AuthController {
   @Post('refresh')
   @HttpCode(200)
   async refresh(
-    @RefreshTokenInfo()
-    { phoneNumber, token }: { phoneNumber: string; token: string },
+    @TokenInfo()
+    { phoneNumber, tokenId }: { phoneNumber: string; tokenId: string },
   ) {
-    return this.authService.refresh(phoneNumber, token);
+    return this.authService.refresh(phoneNumber, tokenId);
   }
 
   @UseGuards(JwtRefreshGuard)
   @Post('logout')
   @HttpCode(200)
   async logout(
-    @RefreshTokenInfo()
-    { token }: { token: string },
+    @TokenInfo()
+    { tokenId }: { tokenId: string },
   ) {
-    return this.authService.logout(token);
+    return this.authService.logout(tokenId);
   }
 
   @Post('password/reset/request')

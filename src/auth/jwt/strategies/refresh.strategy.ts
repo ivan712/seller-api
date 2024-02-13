@@ -20,9 +20,8 @@ export class RefreshTokenStrategy extends PassportStrategy(
 
   validate(
     req: Request,
-    { phoneNumber }: { phoneNumber: string },
-  ): { phoneNumber: string; refreshToken: string } {
-    const refreshToken = req.get('Authorization').split(' ')[1].trim();
-    return { phoneNumber, refreshToken };
+    { phoneNumber, jti }: { phoneNumber: string; jti: string },
+  ): { phoneNumber: string; jti: string } {
+    return { phoneNumber, jti };
   }
 }

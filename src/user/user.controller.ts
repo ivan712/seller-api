@@ -1,7 +1,7 @@
 import { Controller, Get, Inject, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { JwtAuthGuard } from 'src/auth/jwt/access-token.guard';
-import { AccessTokenDecorator } from 'src/auth/jwt/access-token.decorator';
+import { JwtAuthGuard } from 'src/auth/jwt/guards/access-token.guard';
+import { TokenInfo } from 'src/auth/jwt/decorators/token.decorator';
 
 @Controller('user')
 export class UserController {
@@ -9,9 +9,7 @@ export class UserController {
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  async getUserInfo(
-    @AccessTokenDecorator() { phoneNumber }: { phoneNumber: string },
-  ) {
+  async getUserInfo(@TokenInfo() { phoneNumber }: { phoneNumber: string }) {
     const user = await this.userService.getByPhone(phoneNumber);
     return user.getUserInfo();
   }

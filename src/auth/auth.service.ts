@@ -46,7 +46,7 @@ export class AuthService {
       'VERIFICATION_CODE_EXPIRES_AT',
     );
     this.passwordUpdateTokenExpireAt = this.configService.get(
-      'PASSWORD_UPDATE_TOKEN_EXPIRES_AT',
+      'DATA_UPDATE_TOKEN_EXPIRES_AT',
     );
   }
 
@@ -70,7 +70,7 @@ export class AuthService {
     const dataHash = await this.cryptoService.createDataHash(data);
     const dataType = DataType.validationCode;
     const validationData = new ValidationData({
-      dataHash,
+      data: dataHash,
       expiredAt: new Date(
         new Date().getTime() + this.verificationCodeExpireAt * 1000,
       ),
@@ -83,7 +83,7 @@ export class AuthService {
   async generatePasswordUpdateToken(
     code: string,
     phoneNumber: string,
-  ): Promise<Pick<ITokens, 'accessToken'>> {
+  ): Promise<{ updateToken: string }> {
     const validationCode = await this.validationDataRepository.get(
       phoneNumber,
       DataType.validationCode,
@@ -98,7 +98,7 @@ export class AuthService {
 
     const isCodeValid = await this.cryptoService.validateData(
       code,
-      validationCode.getDataHash(),
+      validationCode.getData(),
     );
     if (!isCodeValid)
       throw new BadRequestException(INCORRECT_USER_NAME_OR_PASSWORD);
@@ -108,12 +108,9 @@ export class AuthService {
       DataType.validationCode,
     );
 
-    const accessToken = await this.jwtTokensService.generateUpdateDataJwt({
+    const updateToken = await this.jwtTokensService.generateUpdateDataJwt({
       phoneNumber,
     });
-
-    const accessTokenHash =
-      await this.cryptoService.createDataHash(accessToken);
 
     await this.validationDataRepository.upsertData(
       new ValidationData({
@@ -122,11 +119,11 @@ export class AuthService {
           new Date().getTime() + this.passwordUpdateTokenExpireAt * 1000,
         ),
         dataType: DataType.passwordUpdateToken,
-        dataHash: accessTokenHash,
+        data: updateToken.jwtid,
       }),
     );
 
-    return { accessToken };
+    return { updateToken: updateToken.updateJwt };
   }
 
   async passwordResetRequest(phoneNumber: string) {
@@ -147,19 +144,19 @@ export class AuthService {
   async register(
     userData: ICreateUser,
     validationCode: string,
-  ): Promise<Pick<ITokens, 'accessToken'>> {
+  ): Promise<{ updateToken: string }> {
     const user = await this.userService.getByPhone(userData.phoneNumber);
 
     if (user) throw new BadRequestException(USER_ALREADY_EXIST);
 
-    const token = await this.generatePasswordUpdateToken(
+    const updateToken = await this.generatePasswordUpdateToken(
       validationCode,
       userData.phoneNumber,
     );
 
     await this.userService.create(userData);
 
-    return token;
+    return updateToken;
   }
 
   async login(phoneNumber: string, password: string): Promise<ITokens> {
@@ -181,29 +178,19 @@ export class AuthService {
       this.jwtTokensService.generateRefreshJwt(payload),
     ]);
 
-    await this.refreshTokenRepository.add(refreshToken, user.id);
+    await this.refreshTokenRepository.add(refreshToken.jwtid, user.id);
 
-    return { accessToken, refreshToken };
+    return { accessToken, refreshToken: refreshToken.refreshJwt };
   }
 
-  async updatePassword(
-    password: string,
-    phoneNumber: string,
-    accessToken: string,
-  ) {
-    const updateToken = await this.validationDataRepository.get(
+  async updatePassword(password: string, phoneNumber: string, tokenId: string) {
+    const updateTokenId = await this.validationDataRepository.get(
       phoneNumber,
       DataType.passwordUpdateToken,
     );
 
-    if (!updateToken) throw new ForbiddenException(FORBIDDEN);
-
-    const isTokenValid = await this.cryptoService.validateData(
-      accessToken,
-      updateToken.getDataHash(),
-    );
-
-    if (!isTokenValid) throw new ForbiddenException(FORBIDDEN);
+    if (!updateTokenId || updateTokenId.getData() !== tokenId)
+      throw new ForbiddenException(FORBIDDEN);
 
     await this.validationDataRepository.deleteOne(
       phoneNumber,
@@ -226,11 +213,11 @@ export class AuthService {
       this.jwtTokensService.generateRefreshJwt(payload),
     ]);
 
-    await this.refreshTokenRepository.update(token, refreshToken);
+    await this.refreshTokenRepository.update(token, refreshToken.jwtid);
 
     return {
       accessToken,
-      refreshToken,
+      refreshToken: refreshToken.refreshJwt,
     };
   }
 

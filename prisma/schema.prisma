@@ -37,7 +37,7 @@ enum DataType {
 
 model ValidationData {
   phoneNumber String
-  dataHash String
+  data String
   expiredAt DateTime
   dataType DataType
   @@id([phoneNumber, dataType])

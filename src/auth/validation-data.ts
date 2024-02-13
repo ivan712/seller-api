@@ -6,20 +6,20 @@ export enum DataType {
 }
 
 export class ValidationData {
-  private dataHash: string;
+  private data: string;
   private expiredAt: Date;
   private phoneNumber: string;
   private dataType: DataType;
 
   constructor(data: IValidationData | any) {
     this.phoneNumber = data.phoneNumber;
-    this.dataHash = data.dataHash;
+    this.data = data.data;
     this.expiredAt = data.expiredAt;
     this.dataType = data.dataType;
   }
 
-  getDataHash(): string {
-    return this.dataHash;
+  getData(): string {
+    return this.data;
   }
 
   getExpiredAt(): Date {
