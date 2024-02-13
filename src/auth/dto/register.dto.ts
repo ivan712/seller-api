@@ -1,5 +1,5 @@
 import { IsEnum, IsPhoneNumber, IsString, Matches } from 'class-validator';
-import { Role } from 'src/user/roles.enum';
+import { Role } from '../../user/roles.enum';
 
 export class RegisterDto {
   @IsString()

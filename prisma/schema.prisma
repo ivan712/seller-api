@@ -24,7 +24,7 @@ model User {
   passwordHash String?
 }
 
-model RefreshTokenModel {
+model RefreshToken {
   id    Int     @id @default(autoincrement())
   userId Int
   token String  @unique

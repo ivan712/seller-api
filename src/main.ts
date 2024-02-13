@@ -20,6 +20,7 @@ async function bootstrap() {
     .setDescription('The side-seller API description')
     .setVersion('1.0')
     .addTag('Side Seller Api')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document);

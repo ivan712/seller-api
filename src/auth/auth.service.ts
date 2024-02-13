@@ -5,17 +5,17 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 import { ITokens } from './interfaces/access-token.interface';
 import { ICreateUser } from 'src/user/interfaces/create-user.interface';
 import { RefreshTokenRepository } from './repositories/refresh-token.repository';
 import {
-  FORBIDDEN,
   INCORRECT_USER_NAME_OR_PASSWORD,
+  INCORRECT_USER_NAME_OR_VALIDATION_CODE,
   INVALID_TOKEN,
   USER_ALREADY_EXIST,
   USER_NOT_FOUND,
-} from 'src/exception-messages.constant';
+} from '../messages.constant';
 import { DataType, ValidationData } from './validation-data';
 import { ValidationDataRepository } from './repositories/validation-data.repository';
 import { JwtTokensService } from './jwt/jwt-token.service';
@@ -90,11 +90,11 @@ export class AuthService {
     );
 
     if (!validationCode)
-      throw new BadRequestException(INCORRECT_USER_NAME_OR_PASSWORD);
+      throw new BadRequestException(INCORRECT_USER_NAME_OR_VALIDATION_CODE);
 
     const isNotCodeExpired = new Date() <= validationCode.getExpiredAt();
     if (!isNotCodeExpired)
-      throw new BadRequestException(INCORRECT_USER_NAME_OR_PASSWORD);
+      throw new BadRequestException(INCORRECT_USER_NAME_OR_VALIDATION_CODE);
 
     const isCodeValid = await this.cryptoService.validateData(
       code,
@@ -173,6 +173,11 @@ export class AuthService {
     const payload = {
       phoneNumber,
     };
+
+    const tokensAmount = await this.refreshTokenRepository.count(user.id);
+    if (tokensAmount === 5)
+      await this.refreshTokenRepository.deleteAll(user.id);
+
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtTokensService.generateAccessJwt(payload),
       this.jwtTokensService.generateRefreshJwt(payload),
@@ -190,7 +195,7 @@ export class AuthService {
     );
 
     if (!updateTokenId || updateTokenId.getData() !== tokenId)
-      throw new ForbiddenException(FORBIDDEN);
+      throw new ForbiddenException(INVALID_TOKEN);
 
     await this.validationDataRepository.deleteOne(
       phoneNumber,
