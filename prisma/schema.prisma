@@ -1,0 +1,45 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  user
+  admin
+}
+
+model User {
+  id    Int     @id @default(autoincrement())
+  phoneNumber String  @unique
+  name  String?
+  organisationId String?
+  role Role
+  passwordHash String?
+}
+
+model RefreshToken {
+  id    Int     @id @default(autoincrement())
+  userId Int
+  token String  @unique
+}
+
+enum DataType {
+  validationCode
+  passwordUpdateToken
+}
+
+model ValidationData {
+  phoneNumber String
+  data String
+  expiredAt DateTime
+  dataType DataType
+  @@id([phoneNumber, dataType])
+}
+
