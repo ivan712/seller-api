@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { CreatePasswordDto } from './dto/create-password.dto';
 import { AuthService } from './auth.service';
-import { PreregisterDto } from './dto/pre-register.dto';
+import { PhoneNumberDto } from './dto/phone-number.dto';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtRefreshGuard } from './jwt/guards/refresh-token.guard';
@@ -34,7 +34,7 @@ import {
 
 @ApiTags('Auth')
 @ApiBearerAuth()
-@Controller('auth')
+@Controller('v1/auth')
 export class AuthController {
   constructor(@Inject(AuthService) private authService: AuthService) {}
 
@@ -54,7 +54,7 @@ export class AuthController {
   })
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Sms has been sent ot user',
+    description: 'Sms has been sent to user',
     schema: {
       type: 'object',
       properties: {
@@ -83,7 +83,7 @@ export class AuthController {
     },
   })
   @HttpCode(HttpStatus.OK)
-  async preregister(@Body() dto: PreregisterDto) {
+  async preregister(@Body() dto: PhoneNumberDto) {
     dto.phoneNumber = dto.phoneNumber.replace(/[^!\d]/g, '');
 
     await this.authService.preregister({
@@ -114,12 +114,12 @@ export class AuthController {
         name: {
           type: 'string',
           example: 'Ivan',
-          description: 'users name',
+          description: "user's name",
         },
         role: {
           type: 'string',
           example: 'admin',
-          description: 'users role',
+          description: "user's role",
         },
       },
     },
@@ -194,7 +194,7 @@ export class AuthController {
   })
   @ApiResponse({
     status: 401,
-    description: 'Unauthorized',
+    description: 'Invalid jwt update token',
     schema: {
       type: 'object',
       properties: {
@@ -211,7 +211,7 @@ export class AuthController {
   })
   @ApiResponse({
     status: 400,
-    description: 'password is not strong enough',
+    description: 'Password is not strong enough',
     schema: {
       type: 'object',
       properties: {
@@ -227,7 +227,7 @@ export class AuthController {
           type: 'array',
           items: {
             type: 'string',
-            example: 'password is not strong enough',
+            example: 'Password is not strong enough',
           },
         },
       },
@@ -253,18 +253,19 @@ export class AuthController {
         phoneNumber: {
           type: 'string',
           example: '+7-985-682-91-01',
-          description: 'phone number',
+          description: 'Phone number',
         },
         password: {
           type: 'string',
           example: 'Hello123!',
-          description: 'password',
+          description: 'Password',
         },
       },
     },
   })
   @ApiResponse({
     status: HttpStatus.OK,
+    description: 'Get access and refresh tokens',
     schema: {
       type: 'object',
       properties: {
@@ -313,6 +314,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Refresh tokens' })
   @ApiResponse({
     status: HttpStatus.OK,
+    description: 'Refresh access and refresh tokens',
     schema: {
       type: 'object',
       properties: {
@@ -331,7 +333,7 @@ export class AuthController {
   })
   @ApiResponse({
     status: 401,
-    description: 'Unauthorized',
+    description: 'Invalid refresh token',
     schema: {
       type: 'object',
       properties: {
@@ -372,7 +374,7 @@ export class AuthController {
   })
   @ApiResponse({
     status: 401,
-    description: 'Unauthorized',
+    description: 'Invalid jwt refresh token',
     schema: {
       type: 'object',
       properties: {
@@ -407,7 +409,7 @@ export class AuthController {
         phoneNumber: {
           type: 'string',
           example: '+7-985-682-91-01',
-          description: 'phone number',
+          description: 'Phone number',
         },
       },
     },
@@ -427,7 +429,7 @@ export class AuthController {
   })
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
-    description: 'Bad Request',
+    description: 'Not Found',
     schema: {
       type: 'object',
       properties: {
@@ -447,7 +449,7 @@ export class AuthController {
     },
   })
   @HttpCode(200)
-  async passwordResetRequest(@Body() dto: Pick<PreregisterDto, 'phoneNumber'>) {
+  async passwordResetRequest(@Body() dto: PhoneNumberDto) {
     dto.phoneNumber = dto.phoneNumber.replace(/[^!\d]/g, '');
     await this.authService.passwordResetRequest(dto.phoneNumber);
     return {
@@ -466,12 +468,12 @@ export class AuthController {
         phoneNumber: {
           type: 'string',
           example: '+7-985-682-91-01',
-          description: 'phone number',
+          description: 'Phone number',
         },
         validationCode: {
           type: 'string',
           example: '0123',
-          description: 'validation code',
+          description: 'Мalidation code',
         },
       },
     },

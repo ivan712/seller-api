@@ -188,7 +188,11 @@ export class AuthService {
     return { accessToken, refreshToken: refreshToken.refreshJwt };
   }
 
-  async updatePassword(password: string, phoneNumber: string, tokenId: string) {
+  async updatePassword(
+    password: string,
+    phoneNumber: string,
+    tokenId: string,
+  ): Promise<void> {
     const updateTokenId = await this.validationDataRepository.get(
       phoneNumber,
       DataType.passwordUpdateToken,
@@ -207,8 +211,8 @@ export class AuthService {
     await this.userService.setPassword(passwordHash, phoneNumber);
   }
 
-  async refresh(phoneNumber: string, token: string): Promise<ITokens> {
-    const tokenInfo = await this.refreshTokenRepository.getOne(token);
+  async refresh(phoneNumber: string, tokenId: string): Promise<ITokens> {
+    const tokenInfo = await this.refreshTokenRepository.getOne(tokenId);
 
     if (!tokenInfo) throw new ForbiddenException(INVALID_TOKEN);
 
@@ -218,7 +222,7 @@ export class AuthService {
       this.jwtTokensService.generateRefreshJwt(payload),
     ]);
 
-    await this.refreshTokenRepository.update(token, refreshToken.jwtid);
+    await this.refreshTokenRepository.update(tokenId, refreshToken.jwtid);
 
     return {
       accessToken,
@@ -226,11 +230,11 @@ export class AuthService {
     };
   }
 
-  async logout(token: string) {
-    const tokenInfo = await this.refreshTokenRepository.getOne(token);
+  async logout(tokenId: string) {
+    const tokenInfo = await this.refreshTokenRepository.getOne(tokenId);
 
     if (!tokenInfo) throw new BadRequestException(INVALID_TOKEN);
 
-    await this.refreshTokenRepository.deleteOne(token);
+    await this.refreshTokenRepository.deleteOne(tokenId);
   }
 }

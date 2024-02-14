@@ -1,6 +1,6 @@
 import { IsPhoneNumber } from 'class-validator';
 
-export class PreregisterDto {
+export class PhoneNumberDto {
   @IsPhoneNumber()
   phoneNumber: string;
 }
