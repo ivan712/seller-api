@@ -77,7 +77,7 @@ export class AuthService {
       dataType,
       phoneNumber,
     });
-    await this.validationDataRepository.upsertData(validationData);
+    return this.validationDataRepository.upsertData(validationData);
   }
 
   async generatePasswordUpdateToken(
