@@ -42,11 +42,11 @@ export class AuthService {
     this.verificationCodeLength = Number(
       this.configService.get('VERIFICATION_CODE_LENGTH'),
     );
-    this.verificationCodeExpireAt = this.configService.get(
-      'VERIFICATION_CODE_EXPIRES_AT',
+    this.verificationCodeExpireAt = Number(
+      this.configService.get('VERIFICATION_CODE_EXPIRES_AT'),
     );
-    this.passwordUpdateTokenExpireAt = this.configService.get(
-      'DATA_UPDATE_TOKEN_EXPIRES_AT',
+    this.passwordUpdateTokenExpireAt = Number(
+      this.configService.get('DATA_UPDATE_TOKEN_EXPIRES_AT'),
     );
   }
 
@@ -77,7 +77,7 @@ export class AuthService {
       dataType,
       phoneNumber,
     });
-    return this.validationDataRepository.upsertData(validationData);
+    await this.validationDataRepository.upsertData(validationData);
   }
 
   async generatePasswordUpdateToken(
@@ -101,7 +101,7 @@ export class AuthService {
       validationCode.getData(),
     );
     if (!isCodeValid)
-      throw new BadRequestException(INCORRECT_USER_NAME_OR_PASSWORD);
+      throw new BadRequestException(INCORRECT_USER_NAME_OR_VALIDATION_CODE);
 
     await this.validationDataRepository.deleteOne(
       phoneNumber,
@@ -136,7 +136,8 @@ export class AuthService {
 
   async passwordResetConfirm(phoneNumber: string, code: string) {
     const user = await this.userService.getByPhone(phoneNumber);
-    if (!user) throw new BadRequestException(INCORRECT_USER_NAME_OR_PASSWORD);
+    if (!user)
+      throw new BadRequestException(INCORRECT_USER_NAME_OR_VALIDATION_CODE);
 
     return this.generatePasswordUpdateToken(code, phoneNumber);
   }
@@ -175,7 +176,7 @@ export class AuthService {
     };
 
     const tokensAmount = await this.refreshTokenRepository.count(user.id);
-    if (tokensAmount === 5)
+    if (Number(tokensAmount) >= 5)
       await this.refreshTokenRepository.deleteAll(user.id);
 
     const [accessToken, refreshToken] = await Promise.all([
