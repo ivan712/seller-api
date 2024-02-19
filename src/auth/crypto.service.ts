@@ -42,10 +42,12 @@ export class CryptoService {
   }
 
   async generateRandomString(): Promise<string> {
+    const randomStringLength = this.randomStringLength;
     return new Promise((res, error) => {
-      crypto.randomBytes(this.randomStringLength, function (err, buffer) {
+      crypto.randomBytes(randomStringLength, function (err, buffer) {
         if (err) error(err);
-        res(buffer.toString('hex'));
+        const randomStr = buffer.toString('hex').slice(0, randomStringLength);
+        res(randomStr);
       });
     });
   }
