@@ -8,3 +8,5 @@ export const INCORRECT_USER_NAME_OR_VALIDATION_CODE =
   'Неверный телефонный номер пользователя или код';
 export const INVALID_TOKEN = 'Невалидный токен';
 export const FORBIDDEN = 'Forbidden';
+
+export const INVALID_INN = 'ИНН должен состоять из 10 цифр';

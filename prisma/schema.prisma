@@ -43,3 +43,23 @@ model ValidationData {
   @@id([phoneNumber, dataType])
 }
 
+enum OrgType {
+  LEGAL
+  INDIVIDUAL
+}
+
+enum OrgStatus {
+  wait
+  registred
+}
+
+model Organisation {
+  id    Int     @id @default(autoincrement())
+  name  String
+  inn   String @unique
+  type  OrgType
+  ogrn  String
+  legalAddress String
+  status OrgStatus
+}
+
