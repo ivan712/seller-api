@@ -30,8 +30,15 @@ export class UserRepository implements IUserRepository {
   async update(
     userData: Partial<Omit<User, 'id'>>,
     phoneNumber: string,
+    dbOptions?: any,
   ): Promise<void> {
-    await this.prisma.user.update({
+    let db;
+    if (dbOptions?.trxn) {
+      db = dbOptions.trxn;
+    } else {
+      db = this.prisma;
+    }
+    await db.user.update({
       data: { ...userData },
       where: { phoneNumber },
     });

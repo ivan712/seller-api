@@ -10,3 +10,5 @@ export const INVALID_TOKEN = 'Невалидный токен';
 export const FORBIDDEN = 'Forbidden';
 
 export const INVALID_INN = 'ИНН должен состоять из 10 цифр';
+export const ORG_ALREADY_EXIST =
+  'Организация с данным ИНН уже зарегистрирована';

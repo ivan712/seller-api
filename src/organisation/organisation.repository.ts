@@ -8,8 +8,8 @@ import { Organisation } from './organisation.entity';
 export class OrganisationRepository implements IOrganisationRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: ICreateOrganisationData): Promise<void> {
-    await this.prisma.organisation.create({ data });
+  async create(data: ICreateOrganisationData): Promise<any> {
+    return this.prisma.organisation.create({ data });
   }
 
   async getByInn(inn: string): Promise<Organisation | null> {
@@ -18,7 +18,15 @@ export class OrganisationRepository implements IOrganisationRepository {
     return new Organisation({ pgDoc });
   }
 
-  async confirmRegistration(inn: string): Promise<void> {
-    await this.prisma.organisation.update()
+  async updateOrgData(
+    inn: string,
+    data: Partial<Omit<Organisation, 'id' | 'inn'>>,
+  ): Promise<void> {
+    await this.prisma.organisation.update({
+      where: {
+        inn,
+      },
+      data,
+    });
   }
 }
