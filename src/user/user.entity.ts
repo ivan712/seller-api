@@ -7,6 +7,7 @@ export class User {
   phoneNumber: string;
   role: Role;
   passwordHash?: string;
+  organisationId?: string;
 
   constructor({ pgDoc }: { pgDoc: UserModel }) {
     this.id = String(pgDoc.id);
@@ -14,6 +15,7 @@ export class User {
     this.phoneNumber = pgDoc.phoneNumber;
     this.role = pgDoc.role as Role;
     this.passwordHash = pgDoc.passwordHash;
+    this.organisationId = pgDoc.organisationId;
   }
 
   getUserInfo() {

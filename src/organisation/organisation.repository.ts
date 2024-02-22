@@ -8,12 +8,23 @@ import { Organisation } from './organisation.entity';
 export class OrganisationRepository implements IOrganisationRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: ICreateOrganisationData): Promise<any> {
-    return this.prisma.organisation.create({ data });
+  private getClient(dbOptions?: any) {
+    const trxn = dbOptions?.trxn;
+    return trxn ? trxn : this.prisma;
   }
 
-  async getByInn(inn: string): Promise<Organisation | null> {
-    const pgDoc = await this.prisma.organisation.findFirst({ where: { inn } });
+  async create(
+    data: ICreateOrganisationData,
+    dbOptions?: any,
+  ): Promise<Organisation> {
+    const pgDoc = await this.getClient(dbOptions).organisation.create({ data });
+    return new Organisation({ pgDoc });
+  }
+
+  async getByInn(inn: string, dbOptions?: any): Promise<Organisation | null> {
+    const pgDoc = await this.getClient(dbOptions).organisation.findFirst({
+      where: { inn },
+    });
     if (!pgDoc) return null;
     return new Organisation({ pgDoc });
   }
@@ -21,8 +32,9 @@ export class OrganisationRepository implements IOrganisationRepository {
   async updateOrgData(
     inn: string,
     data: Partial<Omit<Organisation, 'id' | 'inn'>>,
+    dbOptions?: any,
   ): Promise<void> {
-    await this.prisma.organisation.update({
+    await this.getClient(dbOptions).organisation.update({
       where: {
         inn,
       },

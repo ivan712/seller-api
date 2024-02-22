@@ -8,9 +8,14 @@ import { PrismaService } from '../db/prisma.service';
 export class UserRepository implements IUserRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(userInfo: ICreateUser): Promise<User> {
+  private getClient(dbOptions?: any) {
+    const trxn = dbOptions?.trxn;
+    return trxn ? trxn : this.prisma;
+  }
+
+  async create(userInfo: ICreateUser, dbOptions?: any): Promise<User> {
     return new User({
-      pgDoc: await this.prisma.user.create({
+      pgDoc: await this.getClient(dbOptions).user.create({
         data: {
           ...userInfo,
           organisationId: null,
@@ -20,8 +25,10 @@ export class UserRepository implements IUserRepository {
     });
   }
 
-  async getByPhone(phoneNumber: string): Promise<User | null> {
-    const user = await this.prisma.user.findUnique({ where: { phoneNumber } });
+  async getByPhone(phoneNumber: string, dbOptions?: any): Promise<User | null> {
+    const user = await this.getClient(dbOptions).user.findUnique({
+      where: { phoneNumber },
+    });
     if (!user) return null;
 
     return new User({ pgDoc: user });
@@ -32,13 +39,7 @@ export class UserRepository implements IUserRepository {
     phoneNumber: string,
     dbOptions?: any,
   ): Promise<void> {
-    let db;
-    if (dbOptions?.trxn) {
-      db = dbOptions.trxn;
-    } else {
-      db = this.prisma;
-    }
-    await db.user.update({
+    await this.getClient(dbOptions).user.update({
       data: { ...userData },
       where: { phoneNumber },
     });

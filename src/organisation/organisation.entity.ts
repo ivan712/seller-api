@@ -19,7 +19,7 @@ export class Organisation {
 
   constructor({ pgDoc, apiDoc }: { pgDoc?: any; apiDoc?: any }) {
     if (pgDoc) {
-      this.id = pgDoc.id;
+      this.id = String(pgDoc.id);
       this.inn = pgDoc.inn;
       this.name = pgDoc.name;
       this.type = pgDoc.type;

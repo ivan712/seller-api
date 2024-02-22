@@ -6,12 +6,19 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { OrganisationService } from './organisation.service';
 import { CreateOrganisationDto } from './create.dto';
 import { OrgStatus } from './organisation.entity';
-import { OK_MESSAGE } from 'src/messages.constant';
+import { OK_MESSAGE } from '../messages.constant';
 import { InnValidationPipe } from './inn-validation.pipe';
+import { Roles } from '../auth/jwt/decorators/roles.decorator';
+import { Role } from '../user/roles.enum';
+import { JwtAuthGuard } from '../auth/jwt/guards/access-token.guard';
+import { RolesGuard } from '../auth/jwt/guards/roles.guard';
+import { User as UserDecorator } from '../auth/jwt/decorators/user.decorator';
+import { User } from '../user/user.entity';
 
 @Controller('v1/organisation')
 export class OrganisationController {
@@ -20,12 +27,21 @@ export class OrganisationController {
     private organisationService: OrganisationService,
   ) {}
 
+  @Roles(Role.OWNER)
+  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard)
   @Post('registration')
-  async createOrg(@Body() dto: CreateOrganisationDto) {
-    return this.organisationService.create({
-      ...dto,
-      status: OrgStatus.WAIT_REGISTRATION_CONFIRM,
-    });
+  async createOrg(
+    @Body() dto: CreateOrganisationDto,
+    @UserDecorator() user: User,
+  ) {
+    return this.organisationService.create(
+      {
+        ...dto,
+        status: OrgStatus.WAIT_REGISTRATION_CONFIRM,
+      },
+      user,
+    );
   }
 
   @Put('registration/confirm/:inn')
@@ -46,6 +62,6 @@ export class OrganisationController {
   async getOrgInfoFromThirdartyApi(
     @Param('inn', InnValidationPipe) inn: string,
   ) {
-    return this.organisationService.getOrgInfoFromThirdartyApi(inn);
+    return this.organisationService.getOrgInfoFromDadata(inn);
   }
 }
