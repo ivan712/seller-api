@@ -16,10 +16,10 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle('Side Seller Service')
-    .setDescription('The side-seller API description')
+    .setTitle('Auth Service')
+    .setDescription('The auth API description')
     .setVersion('1.0')
-    .addTag('Side Seller Api')
+    .addTag('Auth Api')
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
