@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { USER_ALREADY_EXIST } from 'src/messages.constant';
+import { USER_ALREADY_EXIST } from '../../messages.constant';
 
 export const apiBodyRegisterSchema = {
   schema: {

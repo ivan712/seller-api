@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { INCORRECT_USER_NAME_OR_PASSWORD } from 'src/messages.constant';
+import { INCORRECT_USER_NAME_OR_PASSWORD } from '../../messages.constant';
 
 export const apiBodyLoginSchema = {
   schema: {

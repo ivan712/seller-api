@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { OK_MESSAGE, USER_NOT_FOUND } from 'src/messages.constant';
+import { OK_MESSAGE, USER_NOT_FOUND } from '../../messages.constant';
 
 export const apiBodyPassResetReqSchema = {
   schema: {

@@ -1,4 +1,4 @@
-import { OK_MESSAGE } from 'src/messages.constant';
+import { OK_MESSAGE } from '../../messages.constant';
 
 export const successLogoutSchema = {
   status: 200,

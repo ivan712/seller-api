@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { INCORRECT_USER_NAME_OR_VALIDATION_CODE } from 'src/messages.constant';
+import { INCORRECT_USER_NAME_OR_VALIDATION_CODE } from '../../messages.constant';
 
 export const apiBodyPassResetConfSchema = {
   schema: {
