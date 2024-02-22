@@ -7,6 +7,6 @@ export interface IUserRepository {
   update(
     userData: Partial<Omit<User, 'id'>>,
     phoneNumber: string,
-    dbOptions?: object,
+    dbOptions?: any,
   ): Promise<void>;
 }
