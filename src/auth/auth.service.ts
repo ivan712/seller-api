@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { ITokens } from './interfaces/access-token.interface';
-import { ICreateUser } from 'src/user/interfaces/create-user.interface';
+import { ICreateUser } from '../user/interfaces/create-user.interface';
 import { RefreshTokenRepository } from './repositories/refresh-token.repository';
 import {
   INCORRECT_USER_NAME_OR_PASSWORD,

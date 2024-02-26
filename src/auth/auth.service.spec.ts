@@ -16,7 +16,7 @@ import {
   USER_NOT_FOUND,
 } from '../messages.constant';
 import { DataType, ValidationData } from './validation-data.entity';
-import { ICreateUser } from 'src/user/interfaces/create-user.interface';
+import { ICreateUser } from '../user/interfaces/create-user.interface';
 
 describe('UserService', () => {
   let authService: AuthService;
