@@ -19,12 +19,14 @@ import { JwtAuthGuard } from '../auth/jwt/guards/access-token.guard';
 import { RolesGuard } from '../auth/jwt/guards/roles.guard';
 import { User as UserDecorator } from '../auth/jwt/decorators/user.decorator';
 import { User } from '../user/user.entity';
+import { ThirdPartyApiService } from '../third-party-api/third-party-api.service';
 
 @Controller('v1/organisation')
 export class OrganisationController {
   constructor(
     @Inject(OrganisationService)
     private organisationService: OrganisationService,
+    private thirdPartyApiService: ThirdPartyApiService,
   ) {}
 
   @Roles(Role.OWNER)
@@ -62,6 +64,6 @@ export class OrganisationController {
   async getOrgInfoFromThirdartyApi(
     @Param('inn', InnValidationPipe) inn: string,
   ) {
-    return this.organisationService.getOrgInfoFromDadata(inn);
+    return this.thirdPartyApiService.getOrgInfoFromDadata(inn);
   }
 }

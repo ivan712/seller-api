@@ -16,7 +16,7 @@ import {
   USER_ALREADY_EXIST,
   USER_NOT_FOUND,
 } from '../messages.constant';
-import { DataType, ValidationData } from './validation-data';
+import { DataType, ValidationData } from './validation-data.entity';
 import { ValidationDataRepository } from './repositories/validation-data.repository';
 import { JwtTokensService } from './jwt/jwt-token.service';
 import { CryptoService } from './crypto.service';

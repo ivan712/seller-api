@@ -1,4 +1,4 @@
-import { DataType } from '../validation-data';
+import { DataType } from '../validation-data.entity';
 
 export interface IValidationData {
   phoneNumber: string;

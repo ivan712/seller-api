@@ -14,3 +14,6 @@ export const ORG_ALREADY_EXIST =
   'Организация с данным ИНН уже зарегистрирована';
 export const USER_ALREADY_HAS_ORGANISATION =
   'У данного пользователя уже есть организация';
+
+export const API_INFO_NOT_FOUND =
+  'Не найдена информация для вызова стороннего апи';

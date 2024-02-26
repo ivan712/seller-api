@@ -1,4 +1,4 @@
-export interface IUpsertTokenData {
+export interface IUpsertApiData {
   key: string;
   url: string;
   token: string;

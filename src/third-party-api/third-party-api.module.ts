@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ThirdPartyApiService } from './third-party-api.service';
-import { ThirdPartyApiController } from './third-party-api.controller';
+import { HttpModule } from '@nestjs/axios';
+import { ThirdPartyApiRepository } from './third-party-api.repository';
+import { PrismaService } from '../db/prisma.service';
 
 @Module({
-  providers: [ThirdPartyApiService],
-  controllers: [ThirdPartyApiController],
+  imports: [HttpModule],
+  providers: [ThirdPartyApiService, ThirdPartyApiRepository, PrismaService],
+  exports: [ThirdPartyApiService],
 })
 export class ThirdPartyApiModule {}

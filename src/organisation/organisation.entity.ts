@@ -1,3 +1,6 @@
+import { Organisation as OrganisationModel } from '@prisma/client';
+import { IApiDocDadata } from './interfaces/dadata-api-doc.interface';
+
 export enum OrgType {
   LEGAL = 'LEGAL',
   INDIVIDUAL = 'INDIVIDUAL',
@@ -17,15 +20,21 @@ export class Organisation {
   legalAddress: string;
   status?: OrgStatus;
 
-  constructor({ pgDoc, apiDoc }: { pgDoc?: any; apiDoc?: any }) {
+  constructor({
+    pgDoc,
+    apiDoc,
+  }: {
+    pgDoc?: OrganisationModel;
+    apiDoc?: IApiDocDadata;
+  }) {
     if (pgDoc) {
       this.id = String(pgDoc.id);
       this.inn = pgDoc.inn;
       this.name = pgDoc.name;
-      this.type = pgDoc.type;
+      this.type = pgDoc.type as OrgType;
       this.ogrn = pgDoc.ogrn;
       this.legalAddress = pgDoc.legalAddress;
-      this.status = pgDoc.status;
+      this.status = pgDoc.status as OrgStatus;
     } else if (apiDoc) {
       this.inn = apiDoc.data.inn;
       this.name = apiDoc.unrestricted_value;

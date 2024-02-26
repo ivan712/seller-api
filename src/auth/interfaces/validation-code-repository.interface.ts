@@ -1,4 +1,4 @@
-import { DataType, ValidationData } from '../validation-data';
+import { DataType, ValidationData } from '../validation-data.entity';
 
 export interface IValidationDataRepository {
   get(phoneNumber: string, dataType: DataType): Promise<ValidationData>;

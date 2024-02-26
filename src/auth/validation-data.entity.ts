@@ -1,4 +1,5 @@
 import { IValidationData } from './interfaces/validation-data.interface';
+import { ValidationData as ValidationDataModel } from '@prisma/client';
 
 export enum DataType {
   validationCode = 'validationCode',
@@ -11,11 +12,11 @@ export class ValidationData {
   private phoneNumber: string;
   private dataType: DataType;
 
-  constructor(data: IValidationData | any) {
+  constructor(data: IValidationData | ValidationDataModel) {
     this.phoneNumber = data.phoneNumber;
     this.data = data.data;
-    this.expiredAt = data.expiredAt;
-    this.dataType = data.dataType;
+    this.expiredAt = data.expiredAt as Date;
+    this.dataType = data.dataType as DataType;
   }
 
   getData(): string {

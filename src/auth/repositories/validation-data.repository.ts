@@ -1,5 +1,5 @@
 import { PrismaService } from '../../db/prisma.service';
-import { ValidationData } from '../validation-data';
+import { ValidationData } from '../validation-data.entity';
 import { IValidationDataRepository } from '../interfaces/validation-code-repository.interface';
 import { Injectable } from '@nestjs/common';
 import { DataType } from '@prisma/client';

@@ -65,7 +65,7 @@ model Organisation {
 
 model ThirdPartyApi {
   id    Int     @id @default(autoincrement())
-  key String
+  key String @unique
   url String
   token String
   expiredAt DateTime?
