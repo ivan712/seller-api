@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
-import { INVALID_INN } from 'src/messages.constant';
+import { INVALID_INN } from '../messages.constant';
 
 @Injectable()
 export class InnValidationPipe implements PipeTransform {
