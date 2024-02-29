@@ -62,11 +62,3 @@ model Organisation {
   legalAddress String
   status OrgStatus
 }
-
-model ThirdPartyApi {
-  id    Int     @id @default(autoincrement())
-  key String @unique
-  url String
-  token String
-  expiredAt DateTime?
-}
