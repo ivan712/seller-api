@@ -22,11 +22,10 @@ export class OrganisationService {
   private dadataToken;
 
   constructor(
-    private httpService: HttpService,
-    // @Inject('RABBIT_SERVICE') private client: ClientProxy,
-    private readonly amqpConnection: AmqpConnection,
     @Inject(OrganisationRepository)
     private organisationRepository: IOrganisationRepository,
+    private httpService: HttpService,
+    private readonly amqpConnection: AmqpConnection,
     private userRepository: UserRepository,
     private prismaService: PrismaService,
     private configService: ConfigService,
@@ -51,8 +50,8 @@ export class OrganisationService {
       );
 
       const res = await this.amqpConnection.publish(
-        'my-exchange',
-        'my',
+        'bitrix',
+        'bitrix.key.create.org',
         newOrg,
       );
       console.log('res', res);

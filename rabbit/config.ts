@@ -7,47 +7,37 @@ export const getRabbitMQConfig = (
   return {
     exchanges: [
       {
-        name: configService.get('BITRIX_EXCHANGE_NAME'),
-        type: configService.get('BITRIX_EXCHANGE_TYPE'),
+        name: 'bitrix',
+        type: 'direct',
       },
     ],
     queues: [
       {
-        name: configService.get('BITRIX_LETTER_QUEUE'),
+        name: 'bitrix.queue.create.org',
         options: {
-          noAck:
-            configService.get('BITRIX_LETTER_QUEUE_NOACK_OPTION') === 'false'
-              ? false
-              : true,
-          deadLetterExchange: configService.get('BITRIX_DEAD_LETTER_QUEUE'),
-          durable:
-            configService.get('BITRIX_LETTER_QUEUE_DURABLE') === 'true'
-              ? true
-              : false,
-          deadLetterRoutingKey: configService.get(
-            'BITRIX_DEAD_LETTER_ROUTING_KEY',
-          ),
+          noAck: false,
+          deadLetterExchange: 'bitrix',
+          durable: true,
+          deadLetterRoutingKey: 'bitrix.key.create.org.dead',
         },
-        exchange: configService.get('BITRIX_EXCHANGE_NAME'),
-        routingKey: configService.get('BITRIX_LETTER_QUEUE_ROUTING_KEY'),
+        exchange: 'bitrix',
+        routingKey: 'bitrix.key.create.org',
       },
       {
-        name: configService.get('BITRIX_DEAD_LETTER_QUEUE'),
+        name: 'bitrix.queue.create.org.dead',
         options: {
-          noAck:
-            configService.get('BITRIX_DEAD_LETTER_QUEUE_NOACK_OPTION') ===
-            'false'
-              ? false
-              : true,
-          deadLetterExchange: configService.get('BITRIX_EXCHANGE_NAME'),
+          noAck: false,
+          deadLetterExchange: 'bitrix',
           durable: true,
-          deadLetterRoutingKey: 'my',
-          messageTtl: 60000,
+          deadLetterRoutingKey: 'bitrix.key.create.org',
+          messageTtl: Number(
+            configService.get('BITRIX_CREATE_ORG_DEAD_QUEUE_TTL'),
+          ),
         },
-        exchange: 'my-exchange',
-        routingKey: 'dead',
+        exchange: 'bitrix',
+        routingKey: 'bitrix.key.create.org.dead',
       },
     ],
-    uri: 'amqp://admin:admin@localhost:5672',
+    uri: configService.get('RABBIT_URL'),
   };
 };
