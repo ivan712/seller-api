@@ -19,6 +19,7 @@ import { JwtAuthGuard } from '../auth/jwt/guards/access-token.guard';
 import { RolesGuard } from '../auth/jwt/guards/roles.guard';
 import { User as UserDecorator } from '../auth/jwt/decorators/user.decorator';
 import { User } from '../user/user.entity';
+import { CreateOrgValidationPipe } from './create-org-validation.pipe';
 
 @Controller('v1/organisation')
 export class OrganisationController {
@@ -32,13 +33,13 @@ export class OrganisationController {
   @UseGuards(JwtAuthGuard)
   @Post('registration')
   async createOrg(
-    @Body() dto: CreateOrganisationDto,
+    @Body(new CreateOrgValidationPipe()) dto: CreateOrganisationDto,
     @UserDecorator() user: User,
   ) {
     return this.organisationService.create(
       {
         ...dto,
-        status: OrgStatus.WAIT_REGISTRATION_CONFIRM,
+        status: OrgStatus.SENT_TO_MODERATION,
       },
       user,
     );
@@ -47,7 +48,7 @@ export class OrganisationController {
   @Put('registration/confirm/:inn')
   async confirmRegistration(@Param('inn', InnValidationPipe) inn: string) {
     await this.organisationService.updateOrgData(inn, {
-      status: OrgStatus.REGISTERED,
+      status: OrgStatus.REGISTRED,
     });
 
     return { message: OK_MESSAGE };

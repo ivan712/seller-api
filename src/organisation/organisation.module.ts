@@ -8,7 +8,7 @@ import { UserRepository } from '../user/user.repository';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
-import { getRabbitMQConfig } from 'rabbit/config';
+import { getRabbitMQConfig } from 'src/rabbit/config';
 
 @Module({
   imports: [

@@ -4,9 +4,16 @@ import { UserService } from './user/user.service';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { OrganisationModule } from './organisation/organisation.module';
+import { RabbitModule } from './rabbit/rabbit.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), UserModule, AuthModule, OrganisationModule],
+  imports: [
+    ConfigModule.forRoot(),
+    UserModule,
+    AuthModule,
+    OrganisationModule,
+    RabbitModule,
+  ],
   controllers: [],
   providers: [UserService, ConfigService],
 })

@@ -53,6 +53,9 @@ export class OrganisationService {
         'bitrix',
         'bitrix.key.create.org',
         newOrg,
+        {
+          replyTo: 'bitrix.queue.create.org.response',
+        },
       );
       console.log('res', res);
     });
