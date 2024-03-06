@@ -2,12 +2,14 @@ version: "3.9"
 services:
   postgres:
     image: postgres:13.3
+    networks:
+      - backend
     environment:
       POSTGRES_DB: "mxm"
       POSTGRES_USER: "admin"
       POSTGRES_PASSWORD: "admin"
     ports:
-      - "5432:5432"
+      - 5432:5432
   rabbitmq:
     image: rabbitmq:3-management
     hostname: rabbitmq
@@ -18,3 +20,24 @@ services:
     ports:
       - 15672:15672
       - 5672:5672
+  auth-api:
+    image: auth-api
+    hostname: auth-api
+    # restart: always
+    networks:
+      - backend
+    command: npx prisma db push
+    # depends_on:
+    #   postgres:
+    #     condition: service_healthy
+    #   rabbitmq:
+    #     condition: service_healthy
+    ports:
+      - 3000:3000
+      # - 15672:15672
+      - 5672:5672
+      - 5432:5432
+    volumes:
+      - C:\Users\Admin\Desktop\nest\authorization\seller-api\.env:/opt/app/.env
+networks:
+  backend:
