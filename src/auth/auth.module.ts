@@ -14,6 +14,7 @@ import { ValidationDataRepository } from './repositories/validation-data.reposit
 import { JwtTokensService } from './jwt/jwt-token.service';
 import { CryptoService } from './crypto.service';
 import { UpdateTokenStrategy } from './jwt/strategies/update-data.strategy';
+import { BitrixStrategy } from './jwt/strategies/bitrix.strategy';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { UpdateTokenStrategy } from './jwt/strategies/update-data.strategy';
     UpdateTokenStrategy,
     AccessTokenStrategy,
     RefreshTokenStrategy,
+    BitrixStrategy,
     JwtTokensService,
     RefreshTokenRepository,
     ValidationDataRepository,

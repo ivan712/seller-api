@@ -49,8 +49,10 @@ enum OrgType {
 }
 
 enum OrgStatus {
-  wait
-  registred
+  sent_to_moderation
+  on_moderation
+  registered
+  rejected
 }
 
 model Organisation {

@@ -28,5 +28,6 @@ import { getRabbitMQConfig } from 'src/rabbit/config';
     ConfigService,
   ],
   controllers: [OrganisationController],
+  exports: [OrganisationService],
 })
 export class OrganisationModule {}

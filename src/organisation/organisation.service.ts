@@ -1,11 +1,17 @@
 import { HttpService } from '@nestjs/axios';
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { OrganisationRepository } from './organisation.repository';
 import { IOrganisationRepository } from './interfaces/organisation-repository.interface';
 import { ICreateOrganisationData } from './interfaces/create-organisation.interface';
 import { Organisation } from './organisation.entity';
 import {
   ORG_ALREADY_EXIST,
+  ORG_NOT_FOUND,
   USER_ALREADY_HAS_ORGANISATION,
 } from '../messages.constant';
 import { UserRepository } from '../user/user.repository';
@@ -14,7 +20,6 @@ import { User } from '../user/user.entity';
 import { firstValueFrom } from 'rxjs';
 import { ConfigService } from '@nestjs/config';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-// import { ClientProxy } from '@nestjs/microservices';
 
 @Injectable()
 export class OrganisationService {
@@ -69,6 +74,8 @@ export class OrganisationService {
     inn: string,
     data: Partial<Omit<ICreateOrganisationData, 'inn'>>,
   ): Promise<void> {
+    const org = await this.getByInn(inn);
+    if (!org) throw new NotFoundException(ORG_NOT_FOUND);
     await this.organisationRepository.updateOrgData(inn, data);
   }
 

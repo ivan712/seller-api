@@ -20,6 +20,7 @@ import { RolesGuard } from '../auth/jwt/guards/roles.guard';
 import { User as UserDecorator } from '../auth/jwt/decorators/user.decorator';
 import { User } from '../user/user.entity';
 import { CreateOrgValidationPipe } from './create-org-validation.pipe';
+import { BitrixAuthGuard } from '../auth/jwt/guards/bitrix.guard';
 
 @Controller('v1/organisation')
 export class OrganisationController {
@@ -46,9 +47,20 @@ export class OrganisationController {
   }
 
   @Put('registration/confirm/:inn')
+  @UseGuards(BitrixAuthGuard)
   async confirmRegistration(@Param('inn', InnValidationPipe) inn: string) {
     await this.organisationService.updateOrgData(inn, {
       status: OrgStatus.REGISTRED,
+    });
+
+    return { message: OK_MESSAGE };
+  }
+
+  @UseGuards(BitrixAuthGuard)
+  @Put('registration/reject/:inn')
+  async rejectRegistration(@Param('inn', InnValidationPipe) inn: string) {
+    await this.organisationService.updateOrgData(inn, {
+      status: OrgStatus.REJECTED,
     });
 
     return { message: OK_MESSAGE };

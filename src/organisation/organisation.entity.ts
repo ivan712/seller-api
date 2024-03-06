@@ -9,7 +9,8 @@ export enum OrgType {
 export enum OrgStatus {
   SENT_TO_MODERATION = 'sent_to_moderation',
   ON_MODERATION = 'on_moderation',
-  REGISTRED = 'registred',
+  REGISTRED = 'registered',
+  REJECTED = 'rejected',
 }
 
 export class Organisation {

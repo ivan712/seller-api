@@ -4,7 +4,7 @@ import { INVALID_INN } from '../messages.constant';
 @Injectable()
 export class InnValidationPipe implements PipeTransform {
   transform(value: string) {
-    if (value.match(/^[\d]{10}$/)) {
+    if (value.match(/^[\d]{10}|[\d]{12}$/)) {
       return value;
     }
 
