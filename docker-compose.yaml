@@ -1,9 +1,11 @@
-version: "3.9"
+version: "3"
 services:
   postgres:
     image: postgres:13.3
+    hostname: postgres
+    container_name: postgres
     networks:
-      - backend
+      - mxm_backend
     environment:
       POSTGRES_DB: "mxm"
       POSTGRES_USER: "admin"
@@ -12,32 +14,35 @@ services:
       - 5432:5432
   rabbitmq:
     image: rabbitmq:3-management
-    hostname: rabbitmq
     restart: always
+    container_name: rabbitmq
+    networks:
+      - mxm_backend
+    hostname: rabbitmq
     environment:
       - RABBITMQ_DEFAULT_USER=admin
       - RABBITMQ_DEFAULT_PASS=admin
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
+      start_period: 10s
     ports:
       - 15672:15672
       - 5672:5672
   auth-api:
     image: auth-api
-    hostname: auth-api
-    # restart: always
+    container_name: auth-api
+    restart: always
     networks:
-      - backend
-    command: npx prisma db push
-    # depends_on:
-    #   postgres:
-    #     condition: service_healthy
-    #   rabbitmq:
-    #     condition: service_healthy
+      - mxm_backend
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
     ports:
       - 3000:3000
-      # - 15672:15672
-      - 5672:5672
-      - 5432:5432
     volumes:
-      - C:\Users\Admin\Desktop\nest\authorization\seller-api\.env:/opt/app/.env
+      - ./.env:/opt/app/.env
 networks:
-  backend:
+  mxm_backend:
