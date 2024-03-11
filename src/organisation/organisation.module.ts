@@ -4,16 +4,17 @@ import { OrganisationController } from './organisation.controller';
 import { OrganisationRepository } from './organisation.repository';
 import { PrismaModule } from '../db/prisma.module';
 import { InnValidationPipe } from './inn-validation.pipe';
-import { UserRepository } from '../user/user.repository';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { getRabbitMQConfig } from 'src/rabbit/config';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports: [
     PrismaModule,
     HttpModule,
+    UserModule,
     RabbitMQModule.forRootAsync(RabbitMQModule, {
       imports: [ConfigModule],
       useFactory: getRabbitMQConfig,
@@ -24,7 +25,6 @@ import { getRabbitMQConfig } from 'src/rabbit/config';
     OrganisationService,
     OrganisationRepository,
     InnValidationPipe,
-    UserRepository,
     ConfigService,
   ],
   controllers: [OrganisationController],

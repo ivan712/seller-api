@@ -16,18 +16,19 @@ enum Role {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  phoneNumber String  @unique
-  name  String?
-  organisationId String?
-  role Role
-  passwordHash String?
+  id             Int           @id @default(autoincrement())
+  phoneNumber    String        @unique
+  name           String?
+  organisationId Int?
+  organisation   Organisation? @relation(fields: [organisationId], references: [id])
+  role           Role
+  passwordHash   String?
 }
 
 model RefreshToken {
-  id    Int     @id @default(autoincrement())
+  id     Int    @id @default(autoincrement())
   userId Int
-  token String  @unique
+  token  String @unique
 }
 
 enum DataType {
@@ -37,9 +38,10 @@ enum DataType {
 
 model ValidationData {
   phoneNumber String
-  data String
-  expiredAt DateTime
-  dataType DataType
+  data        String
+  expiredAt   DateTime
+  dataType    DataType
+
   @@id([phoneNumber, dataType])
 }
 
@@ -56,11 +58,17 @@ enum OrgStatus {
 }
 
 model Organisation {
-  id    Int     @id @default(autoincrement())
-  name  String
-  inn   String @unique
-  type  OrgType
-  ogrn  String
+  id           Int       @id @default(autoincrement())
+  name         String
+  inn          String    @unique
+  type         OrgType
+  ogrn         String
   legalAddress String
-  status OrgStatus
+  status       OrgStatus
+  User         User[]
+}
+
+model SurveyQuestion {
+  id       Int    @id @default(autoincrement())
+  question String
 }

@@ -27,20 +27,29 @@ export class UserRepository implements IUserRepository {
 
   async getByPhone(phoneNumber: string, dbOptions?: any): Promise<User | null> {
     const user = await this.getClient(dbOptions).user.findUnique({
-      where: { phoneNumber },
+      include: {
+        organisation: true,
+      },
+      where: {
+        phoneNumber,
+      },
     });
+
     if (!user) return null;
 
     return new User({ pgDoc: user });
   }
 
   async update(
-    userData: Partial<Omit<User, 'id'>>,
+    userData: Partial<Omit<User, 'id' | 'organisation'>>,
     phoneNumber: string,
     dbOptions?: any,
   ): Promise<void> {
+    const updateData = userData.organisationId
+      ? { ...userData, organisationId: Number(userData.organisationId) }
+      : userData;
     await this.getClient(dbOptions).user.update({
-      data: { ...userData },
+      data: updateData,
       where: { phoneNumber },
     });
   }

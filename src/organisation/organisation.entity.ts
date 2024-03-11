@@ -14,7 +14,7 @@ export enum OrgStatus {
 }
 
 export class Organisation {
-  id?: string;
+  id: string;
   inn: string;
   name: string;
   type: OrgType;

@@ -1,4 +1,4 @@
-import { Controller, Get, HttpStatus, Inject, UseGuards } from '@nestjs/common';
+import { Controller, Get, HttpStatus, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from '../auth/jwt/guards/access-token.guard';
 import { TokenInfo } from '../auth/jwt/decorators/token.decorator';
@@ -13,7 +13,7 @@ import {
 @Controller('v1/user')
 @ApiBearerAuth()
 export class UserController {
-  constructor(@Inject(UserService) private userService: UserService) {}
+  constructor(private userService: UserService) {}
 
   @Get('me')
   @ApiOperation({ summary: 'Get user info' })

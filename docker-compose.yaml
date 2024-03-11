@@ -31,18 +31,18 @@ services:
     ports:
       - 15672:15672
       - 5672:5672
-  auth-api:
-    image: auth-api
-    container_name: auth-api
-    restart: always
-    networks:
-      - mxm_backend
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-    ports:
-      - 3000:3000
-    volumes:
-      - ./.env:/opt/app/.env
+  # auth-api:
+  #   image: auth-api
+  #   container_name: auth-api
+  #   restart: always
+  #   networks:
+  #     - mxm_backend
+  #   depends_on:
+  #     rabbitmq:
+  #       condition: service_healthy
+  #   ports:
+  #     - 3000:3000
+  #   volumes:
+  #     - ./.env:/opt/app/.env
 networks:
   mxm_backend:

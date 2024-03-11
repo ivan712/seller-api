@@ -5,6 +5,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { OrganisationModule } from './organisation/organisation.module';
 import { RabbitModule } from './rabbit/rabbit.module';
+import { SurveyModule } from './survey/survey.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { RabbitModule } from './rabbit/rabbit.module';
     AuthModule,
     OrganisationModule,
     RabbitModule,
+    SurveyModule,
   ],
   controllers: [],
   providers: [UserService, ConfigService],

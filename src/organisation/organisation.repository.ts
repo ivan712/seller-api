@@ -8,7 +8,7 @@ import { Organisation } from './organisation.entity';
 export class OrganisationRepository implements IOrganisationRepository {
   constructor(private prisma: PrismaService) {}
 
-  private getClient(dbOptions?: any) {
+  private getClient(dbOptions?: any): PrismaService {
     const trxn = dbOptions?.trxn;
     return trxn ? trxn : this.prisma;
   }
