@@ -16,13 +16,14 @@ enum Role {
 }
 
 model User {
-  id             Int           @id @default(autoincrement())
-  phoneNumber    String        @unique
+  id             Int            @id @default(autoincrement())
+  phoneNumber    String         @unique
   name           String?
   organisationId Int?
-  organisation   Organisation? @relation(fields: [organisationId], references: [id])
+  organisation   Organisation?  @relation(fields: [organisationId], references: [id])
   role           Role
   passwordHash   String?
+  SurveyAnswer   SurveyAnswer[]
 }
 
 model RefreshToken {
@@ -69,6 +70,17 @@ model Organisation {
 }
 
 model SurveyQuestion {
-  id       Int    @id @default(autoincrement())
-  question String
+  id           Int            @id @default(autoincrement())
+  question     String
+  SurveyAnswer SurveyAnswer[]
+}
+
+model SurveyAnswer {
+  userId         Int
+  user           User?           @relation(fields: [userId], references: [id])
+  questionId     Int
+  surveyQuestion SurveyQuestion? @relation(fields: [questionId], references: [id])
+  answer String
+  
+  @@id([userId, questionId])
 }

@@ -1,21 +1,15 @@
-import { SurveyQuestion } from '../entities/question.entity';
+import { SurveyAnswer } from '../entities/answer.entity';
 
 export interface ISurveyAnswersRepository {
-  create(
+  getAnswersByUserId(id: string): Promise<SurveyAnswer[]>;
+  deleteByUserId(
     userId: string,
     questionId: number,
-    answer: string,
     dbOptions?: any,
   ): Promise<void>;
-  getAnswersByUserId(
-    id: string,
-    dbOptions?: any,
-  ): Promise<SurveyQuestion | null>;
-  delete(id: string, dbOptions?: any): Promise<void>;
-  update(
-    id: string,
-    data: Omit<SurveyQuestion, 'id'>,
+  upsertMany(
+    userId: string,
+    answers: SurveyAnswer[],
     dbOptions?: any,
   ): Promise<void>;
-  getAll(): Promise<SurveyQuestion[]>;
 }

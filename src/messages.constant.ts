@@ -22,3 +22,5 @@ export const ORG_NOT_FOUND = 'Организация не найдена';
 
 export const API_INFO_NOT_FOUND =
   'Не найдена информация для вызова стороннего апи';
+
+export const INVALID_QUESTION_ID = 'Недопустимое значение id вопроса';
