@@ -62,17 +62,17 @@ describe('JwtTokenService', () => {
   });
 
   it('access token', async () => {
-    const phoneNumber = '79856829427';
+    const userId = '123321';
 
     const accessToken = await jwtTokensService.generateAccessJwt({
-      phoneNumber,
+      userId,
     });
 
     const verify = await jwtService.verifyAsync(accessToken, {
       secret: envVars.jwtAccessSecret,
     });
 
-    expect(verify.phoneNumber).toBe(phoneNumber);
+    expect(verify.userId).toBe(userId);
     expect(verify.exp - verify.iat).toBe(envVars.accessTokenExpiresAt);
     expect(
       jwtService.verifyAsync(accessToken, {
@@ -85,14 +85,14 @@ describe('JwtTokenService', () => {
     const phoneNumber = '79856829428';
 
     const { updateJwt, jwtid } = await jwtTokensService.generateUpdateDataJwt({
-      phoneNumber,
+      userContact: phoneNumber,
     });
 
     const verify = await jwtService.verifyAsync(updateJwt, {
       secret: envVars.jwtUpdateDataSecret,
     });
 
-    expect(verify.phoneNumber).toBe(phoneNumber);
+    expect(verify.userContact).toBe(phoneNumber);
     expect(verify.jti).toBe(jwtid);
     expect(verify.exp - verify.iat).toBe(envVars.dataUpdateTokenExpiresAt);
     expect(
@@ -103,17 +103,17 @@ describe('JwtTokenService', () => {
   });
 
   it('refresh token', async () => {
-    const phoneNumber = '79856829429';
+    const userId = 'userId';
 
     const { refreshJwt, jwtid } = await jwtTokensService.generateRefreshJwt({
-      phoneNumber,
+      userId,
     });
 
     const verify = await jwtService.verifyAsync(refreshJwt, {
       secret: envVars.jwtRefreshSecret,
     });
 
-    expect(verify.phoneNumber).toBe(phoneNumber);
+    expect(verify.userId).toBe(userId);
     expect(verify.jti).toBe(jwtid);
     expect(verify.exp - verify.iat).toBe(envVars.refreshTokenExpiresAt);
     expect(

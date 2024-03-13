@@ -25,6 +25,21 @@ export class UserRepository implements IUserRepository {
     });
   }
 
+  async getById(id: string, dbOptions?: any): Promise<User | null> {
+    const user = await this.getClient(dbOptions).user.findUnique({
+      include: {
+        organisation: true,
+      },
+      where: {
+        id,
+      },
+    });
+
+    if (!user) return null;
+
+    return new User({ pgDoc: user });
+  }
+
   async getByPhone(phoneNumber: string, dbOptions?: any): Promise<User | null> {
     const user = await this.getClient(dbOptions).user.findUnique({
       include: {

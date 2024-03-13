@@ -8,7 +8,7 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
 
   async add(token: string, userId: string): Promise<void> {
     await this.prisma.refreshToken.create({
-      data: { token, userId: Number(userId) },
+      data: { token, userId },
     });
   }
 
@@ -29,7 +29,7 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
 
   async deleteAll(userId: string): Promise<void> {
     await this.prisma.refreshToken.deleteMany({
-      where: { userId: Number(userId) },
+      where: { userId },
     });
   }
 
@@ -45,7 +45,7 @@ export class RefreshTokenRepository implements IRefreshTokenRepository {
   async count(userId: string): Promise<Number> {
     return this.prisma.refreshToken.count({
       where: {
-        userId: Number(userId),
+        userId,
       },
     });
   }

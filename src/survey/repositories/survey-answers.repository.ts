@@ -22,7 +22,7 @@ export class SurveyAnswersRepository implements ISurveyAnswersRepository {
         surveyQuestion: true,
       },
       where: {
-        userId: +id,
+        userId: id,
       },
     });
     console.log('pgDoc', pgDocs);
@@ -38,7 +38,7 @@ export class SurveyAnswersRepository implements ISurveyAnswersRepository {
     await this.deleteByUserId(userId, dbOptions);
     await this.getClient(dbOptions).surveyAnswer.createMany({
       data: answers.map((a) => ({
-        userId: +userId,
+        userId,
         questionId: a.questionId,
         answer: a.answer,
       })),
@@ -48,7 +48,7 @@ export class SurveyAnswersRepository implements ISurveyAnswersRepository {
   async deleteByUserId(userId: string, dbOptions?: any): Promise<void> {
     await this.getClient(dbOptions).surveyAnswer.deleteMany({
       where: {
-        userId: +userId,
+        userId,
       },
     });
   }

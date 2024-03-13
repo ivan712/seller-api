@@ -13,7 +13,7 @@ export class User {
   organisation?: Organisation;
 
   constructor({ pgDoc }: { pgDoc: UserModel & { organisation?: OrgModel } }) {
-    this.id = String(pgDoc.id);
+    this.id = pgDoc.id;
     this.name = pgDoc.name;
     this.phoneNumber = pgDoc.phoneNumber;
     this.role = pgDoc.role as Role;
@@ -28,6 +28,7 @@ export class User {
 
   getUserInfo() {
     return {
+      id: this.id,
       name: this.name,
       phoneNumber: this.phoneNumber,
       role: this.role,

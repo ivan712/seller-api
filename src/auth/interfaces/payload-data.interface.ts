@@ -1,3 +1,3 @@
 export interface IPayloadData {
-  phoneNumber: string;
+  userId: string;
 }

@@ -1,6 +1,6 @@
 export class SurveyQuestion {
   constructor({ pgDoc }: { pgDoc: any }) {
-    this.id = String(pgDoc.id);
+    this.id = pgDoc.id;
     this.question = pgDoc.question;
   }
 

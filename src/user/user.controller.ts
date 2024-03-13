@@ -56,8 +56,8 @@ export class UserController {
     },
   })
   @UseGuards(JwtAuthGuard)
-  async getUserInfo(@TokenInfo() { phoneNumber }: { phoneNumber: string }) {
-    const user = await this.userService.getByPhone(phoneNumber);
+  async getUserInfo(@TokenInfo() { userId }: { userId: string }) {
+    const user = await this.userService.getById(userId);
     return user.getUserInfo();
   }
 }

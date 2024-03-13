@@ -16,19 +16,21 @@ enum Role {
 }
 
 model User {
-  id             Int            @id @default(autoincrement())
+  id             String         @id @default(uuid())
   phoneNumber    String         @unique
   name           String?
-  organisationId Int?
+  organisationId String?
   organisation   Organisation?  @relation(fields: [organisationId], references: [id])
   role           Role
   passwordHash   String?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
   SurveyAnswer   SurveyAnswer[]
 }
 
 model RefreshToken {
-  id     Int    @id @default(autoincrement())
-  userId Int
+  // id     Int    @id @default(autoincrement())
+  userId String
   token  String @unique
 }
 
@@ -38,12 +40,12 @@ enum DataType {
 }
 
 model ValidationData {
-  phoneNumber String
-  data        String
-  expiredAt   DateTime
-  dataType    DataType
+  userContact    String
+  data      String
+  expiredAt DateTime
+  dataType  DataType
 
-  @@id([phoneNumber, dataType])
+  @@id([userContact, dataType])
 }
 
 enum OrgType {
@@ -59,13 +61,15 @@ enum OrgStatus {
 }
 
 model Organisation {
-  id           Int       @id @default(autoincrement())
+  id           String    @id @default(uuid())
   name         String
   inn          String    @unique
   type         OrgType
   ogrn         String
   legalAddress String
   status       OrgStatus
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
   User         User[]
 }
 
@@ -76,11 +80,13 @@ model SurveyQuestion {
 }
 
 model SurveyAnswer {
-  userId         Int
+  userId         String
   user           User?           @relation(fields: [userId], references: [id])
   questionId     Int
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
   surveyQuestion SurveyQuestion? @relation(fields: [questionId], references: [id])
-  answer String
-  
+  answer         String
+
   @@id([userId, questionId])
 }

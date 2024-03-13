@@ -113,7 +113,7 @@ describe('UserService', () => {
         new ValidationData({
           data: '0' + String(code),
           expiredAt: new Date(envVars.verificationCodeExpireAt * 1000),
-          phoneNumber,
+          userContact: phoneNumber,
           dataType: DataType.validationCode,
         }),
       );
@@ -140,7 +140,7 @@ describe('UserService', () => {
         new ValidationData({
           data: '000' + String(code),
           expiredAt: new Date(envVars.verificationCodeExpireAt * 1000),
-          phoneNumber,
+          userContact: phoneNumber,
           dataType: DataType.validationCode,
         }),
       );
@@ -152,7 +152,7 @@ describe('UserService', () => {
     const validationCode = new ValidationData({
       data: '0123',
       expiredAt: new Date(0),
-      phoneNumber,
+      userContact: phoneNumber,
       dataType: DataType.validationCode,
     });
 
@@ -205,7 +205,7 @@ describe('UserService', () => {
         new ValidationData({
           data: updateToken.jwtid,
           expiredAt: new Date(envVars.passwordUpdateTokenExpireAt * 1000),
-          phoneNumber,
+          userContact: phoneNumber,
           dataType: DataType.passwordUpdateToken,
         }),
       );

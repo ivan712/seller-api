@@ -110,9 +110,9 @@ export class AuthController {
   async updatePassword(
     @Body() dto: CreatePasswordDto,
     @TokenInfo()
-    { tokenId, phoneNumber }: { tokenId: string; phoneNumber: string },
+    { tokenId, userContact }: { tokenId: string; userContact: string },
   ) {
-    await this.authService.updatePassword(dto.password, phoneNumber, tokenId);
+    await this.authService.updatePassword(dto.password, userContact, tokenId);
     return {
       message: OK_MESSAGE,
     };
@@ -137,9 +137,9 @@ export class AuthController {
   @HttpCode(200)
   async refresh(
     @TokenInfo()
-    { phoneNumber, tokenId }: { phoneNumber: string; tokenId: string },
+    { userId, tokenId }: { userId: string; tokenId: string },
   ) {
-    return this.authService.refresh(phoneNumber, tokenId);
+    return this.authService.refresh(userId, tokenId);
   }
 
   @UseGuards(JwtRefreshGuard)

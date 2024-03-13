@@ -18,6 +18,10 @@ export class UserService {
     return this.userRepository.getByPhone(phoneNumber);
   }
 
+  async getById(id: string): Promise<User | null> {
+    return this.userRepository.getById(id);
+  }
+
   async setPassword(passwordHash: string, phoneNumber: string) {
     await this.userRepository.update({ passwordHash }, phoneNumber);
   }

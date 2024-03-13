@@ -3,6 +3,7 @@ import { IPayloadData } from '../interfaces/payload-data.interface';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CryptoService } from '../crypto.service';
+import { IPayloadUpdateData } from '../interfaces/payload-update-data.interface';
 
 @Injectable()
 export class JwtTokensService {
@@ -22,7 +23,7 @@ export class JwtTokensService {
   }
 
   async generateUpdateDataJwt(
-    payloadData: IPayloadData,
+    payloadData: IPayloadUpdateData,
   ): Promise<{ updateJwt: string; jwtid: string }> {
     const jwtid = await this.cryptoService.generateRandomString();
     const updateJwt = await this.jwtService.signAsync(payloadData, {

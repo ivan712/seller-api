@@ -9,14 +9,14 @@ export class ValidationDataRepository implements IValidationDataRepository {
   constructor(private prisma: PrismaService) {}
 
   async get(
-    phoneNumber: string,
+    userContact: string,
     dataType: DataType,
   ): Promise<ValidationData | null> {
     const validationData = await this.prisma.validationData.findUnique({
       where: {
-        phoneNumber_dataType: {
+        userContact_dataType: {
           dataType,
-          phoneNumber,
+          userContact,
         },
       },
     });
@@ -29,13 +29,13 @@ export class ValidationDataRepository implements IValidationDataRepository {
   async upsertData(validationData: ValidationData): Promise<void> {
     await this.prisma.validationData.upsert({
       where: {
-        phoneNumber_dataType: {
+        userContact_dataType: {
           dataType: validationData.getDataType(),
-          phoneNumber: validationData.getPhoneNumber(),
+          userContact: validationData.getUserContact(),
         },
       },
       create: {
-        phoneNumber: validationData.getPhoneNumber(),
+        userContact: validationData.getUserContact(),
         data: validationData.getData(),
         dataType: validationData.getDataType(),
         expiredAt: validationData.getExpiredAt().toISOString(),
@@ -47,12 +47,12 @@ export class ValidationDataRepository implements IValidationDataRepository {
     });
   }
 
-  async deleteOne(phoneNumber: string, dataType: DataType) {
+  async deleteOne(userContact: string, dataType: DataType) {
     await this.prisma.validationData.delete({
       where: {
-        phoneNumber_dataType: {
+        userContact_dataType: {
           dataType,
-          phoneNumber,
+          userContact,
         },
       },
     });

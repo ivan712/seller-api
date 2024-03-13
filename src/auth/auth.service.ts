@@ -60,7 +60,7 @@ export class AuthService {
     return;
   }
 
-  async upsertValidationCode(phoneNumber: string): Promise<void> {
+  async upsertValidationCode(userContact: string): Promise<void> {
     const randomNumber = await this.cryptoService.generateRandomInt();
     const data = String(randomNumber).padStart(
       this.verificationCodeLength,
@@ -75,17 +75,17 @@ export class AuthService {
         new Date().getTime() + this.verificationCodeExpireAt * 1000,
       ),
       dataType,
-      phoneNumber,
+      userContact,
     });
     await this.validationDataRepository.upsertData(validationData);
   }
 
   async generatePasswordUpdateToken(
     code: string,
-    phoneNumber: string,
+    userContact: string,
   ): Promise<{ updateToken: string }> {
     const validationCode = await this.validationDataRepository.get(
-      phoneNumber,
+      userContact,
       DataType.validationCode,
     );
 
@@ -104,17 +104,17 @@ export class AuthService {
       throw new BadRequestException(INCORRECT_USER_NAME_OR_VALIDATION_CODE);
 
     await this.validationDataRepository.deleteOne(
-      phoneNumber,
+      userContact,
       DataType.validationCode,
     );
 
     const updateToken = await this.jwtTokensService.generateUpdateDataJwt({
-      phoneNumber,
+      userContact,
     });
 
     await this.validationDataRepository.upsertData(
       new ValidationData({
-        phoneNumber,
+        userContact,
         expiredAt: new Date(
           new Date().getTime() + this.passwordUpdateTokenExpireAt * 1000,
         ),
@@ -149,7 +149,6 @@ export class AuthService {
     const user = await this.userService.getByPhone(userData.phoneNumber);
 
     if (user) throw new BadRequestException(USER_ALREADY_EXIST);
-
     const updateToken = await this.generatePasswordUpdateToken(
       validationCode,
       userData.phoneNumber,
@@ -172,7 +171,7 @@ export class AuthService {
     if (!isPasswordValid)
       throw new BadRequestException(INCORRECT_USER_NAME_OR_PASSWORD);
     const payload = {
-      phoneNumber,
+      userId: user.id,
     };
 
     const tokensAmount = await this.refreshTokenRepository.count(user.id);
@@ -191,11 +190,11 @@ export class AuthService {
 
   async updatePassword(
     password: string,
-    phoneNumber: string,
+    userContact: string,
     tokenId: string,
   ): Promise<void> {
     const updateTokenId = await this.validationDataRepository.get(
-      phoneNumber,
+      userContact,
       DataType.passwordUpdateToken,
     );
 
@@ -203,21 +202,21 @@ export class AuthService {
       throw new ForbiddenException(INVALID_TOKEN);
 
     await this.validationDataRepository.deleteOne(
-      phoneNumber,
+      userContact,
       DataType.passwordUpdateToken,
     );
 
     const passwordHash = await this.cryptoService.createDataHash(password);
 
-    await this.userService.setPassword(passwordHash, phoneNumber);
+    await this.userService.setPassword(passwordHash, userContact);
   }
 
-  async refresh(phoneNumber: string, tokenId: string): Promise<ITokens> {
+  async refresh(userId: string, tokenId: string): Promise<ITokens> {
     const tokenInfo = await this.refreshTokenRepository.getOne(tokenId);
 
     if (!tokenInfo) throw new ForbiddenException(INVALID_TOKEN);
 
-    const payload = { phoneNumber };
+    const payload = { userId };
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtTokensService.generateAccessJwt(payload),
       this.jwtTokensService.generateRefreshJwt(payload),
