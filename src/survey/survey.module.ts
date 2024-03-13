@@ -1,17 +1,13 @@
 import { Module } from '@nestjs/common';
 import { SurveyService } from './survey.service';
 import { SurveyController } from './survey.controller';
-import { SurveyQuestionsRepository } from './repositories/survey-questions.repository';
-import { PrismaService } from 'src/db/prisma.service';
-import { SurveyAnswersRepository } from './repositories/survey-answers.repository';
+import { PrismaService } from '../db/prisma.service';
+import { SurveyAnswersRepository } from './survey-answers.repository';
+import { UserModule } from '../user/user.module';
 
 @Module({
-  providers: [
-    SurveyService,
-    SurveyQuestionsRepository,
-    SurveyAnswersRepository,
-    PrismaService,
-  ],
+  imports: [UserModule],
+  providers: [SurveyService, SurveyAnswersRepository, PrismaService],
   controllers: [SurveyController],
 })
 export class SurveyModule {}

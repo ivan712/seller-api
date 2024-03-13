@@ -40,10 +40,10 @@ enum DataType {
 }
 
 model ValidationData {
-  userContact    String
-  data      String
-  expiredAt DateTime
-  dataType  DataType
+  userContact String
+  data        String
+  expiredAt   DateTime
+  dataType    DataType
 
   @@id([userContact, dataType])
 }
@@ -73,20 +73,26 @@ model Organisation {
   User         User[]
 }
 
-model SurveyQuestion {
-  id           Int            @id @default(autoincrement())
-  question     String
-  SurveyAnswer SurveyAnswer[]
+enum SalePlace {
+  seller_city
+  RF
+}
+
+enum WorkingModel {
+  FBO
+  FBS
 }
 
 model SurveyAnswer {
-  userId         String
-  user           User?           @relation(fields: [userId], references: [id])
-  questionId     Int
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
-  surveyQuestion SurveyQuestion? @relation(fields: [questionId], references: [id])
-  answer         String
-
-  @@id([userId, questionId])
+  userId                  String       @id
+  user                    User?        @relation(fields: [userId], references: [id])
+  region                  String
+  city                    String
+  salePlace               SalePlace
+  mandatoryCertification  Boolean
+  productCategory         String[]
+  workingModel            WorkingModel
+  sellingOtherMarketplace Boolean
+  createdAt               DateTime     @default(now())
+  updatedAt               DateTime     @updatedAt
 }

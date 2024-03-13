@@ -7,8 +7,8 @@ import { InnValidationPipe } from './inn-validation.pipe';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
-import { getRabbitMQConfig } from 'src/rabbit/config';
-import { UserModule } from 'src/user/user.module';
+import { getRabbitMQConfig } from '../rabbit/config';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [

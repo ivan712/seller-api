@@ -1,53 +1,33 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Post,
-  Put,
-  UseFilters,
-  UseGuards,
-} from '@nestjs/common';
-import { CreateQuestionDto } from './dto/create-question.dto';
+import { Body, Controller, Get, Put, UseGuards } from '@nestjs/common';
 import { SurveyService } from './survey.service';
-import { OK_MESSAGE } from '../messages.constant';
-import { CreateAnswerDto } from './dto/create-answer.dto';
-import { PrismaClientExceptionFilter } from './question-fkey-exception.filter';
+import { CreateAnswerDto } from './create-answer.dto';
 import { JwtAuthGuard } from '../auth/jwt/guards/access-token.guard';
-import { TokenInfo } from '../auth/jwt/decorators/token.decorator';
+import { Roles } from '../auth/jwt/decorators/roles.decorator';
+import { RolesGuard } from '../auth/jwt/guards/roles.guard';
+import { Role } from '../user/roles.enum';
+import { User } from '../auth/jwt/decorators/user.decorator';
 
 @Controller('v1/survey')
 export class SurveyController {
   constructor(private surveyService: SurveyService) {}
 
-  @Post()
+  @Roles(Role.OWNER)
+  @UseGuards(RolesGuard)
   @UseGuards(JwtAuthGuard)
-  async createQuestion(@Body() dto: CreateQuestionDto) {
-    await this.surveyService.createQuestion(dto.question);
-
-    return {
-      message: OK_MESSAGE,
-    };
-  }
-
-  @Get('all')
-  @UseGuards(JwtAuthGuard)
-  async getAllQuestions() {
-    return this.surveyService.getAllQuestions();
-  }
-
   @Put('answer')
-  @UseGuards(JwtAuthGuard)
-  @UseFilters(new PrismaClientExceptionFilter())
   async answerQuestions(
-    @TokenInfo() { userId }: { userId: string },
-    @Body() answers: CreateAnswerDto[],
+    @User() { id }: { id: string },
+    @Body() answers: CreateAnswerDto,
   ) {
-    return this.surveyService.answerQuestions(userId, answers);
+    return this.surveyService.answerQuestions(id, answers);
   }
 
-  @Get('answer')
+  @Roles(Role.OWNER)
+  @UseGuards(RolesGuard)
   @UseGuards(JwtAuthGuard)
-  async getUserAnswers(@TokenInfo() { userId }: { userId: string }) {
-    return this.surveyService.getUserAnswers(userId);
+  @Get('answer')
+  async getUserAnswers(@User() { id }: { id: string }) {
+    console.log('userId', id);
+    return this.surveyService.getUserAnswers(id);
   }
 }
