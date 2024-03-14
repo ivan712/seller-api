@@ -22,3 +22,6 @@ export const ORG_NOT_FOUND = 'Организация не найдена';
 
 export const API_INFO_NOT_FOUND =
   'Не найдена информация для вызова стороннего апи';
+
+export const NOT_FOUND_INFO_ABOUT_ORG =
+  'Не найдена информация об организации пользователя';

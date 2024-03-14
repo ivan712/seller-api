@@ -4,15 +4,27 @@ import { ICreateOrganisationData } from './interfaces/create-organisation.interf
 import { IOrganisationRepository } from './interfaces/organisation-repository.interface';
 import { Organisation } from './organisation.entity';
 import { IDbOptions } from '../shared/db-options.interface';
-import { Repository } from 'src/shared/repository';
+import { Repository } from '../shared/repository';
+import { ConfigService } from '@nestjs/config';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class OrganisationRepository
   extends Repository
   implements IOrganisationRepository
 {
-  constructor(prisma: PrismaService) {
+  private dadataUrl;
+  private dadataToken;
+
+  constructor(
+    prisma: PrismaService,
+    private configService: ConfigService,
+    private httpService: HttpService,
+  ) {
     super(prisma);
+    this.dadataUrl = this.configService.get('DADATA_URL');
+    this.dadataToken = this.configService.get('DADATA_TOKEN');
   }
 
   async create(
@@ -32,6 +44,45 @@ export class OrganisationRepository
     });
     if (!pgDoc) return null;
     return new Organisation({ pgDoc });
+  }
+
+  async getByUserId(
+    id: string,
+    dbOptions?: IDbOptions,
+  ): Promise<Organisation | null> {
+    const pgDoc = await this.getClient(dbOptions).user.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        organisation: true,
+      },
+    });
+
+    const org = pgDoc.organisation;
+
+    if (!org) return null;
+
+    return new Organisation({ pgDoc: pgDoc.organisation });
+  }
+
+  async getOrgInfoFromDadata(inn: string): Promise<Organisation> {
+    const { data } = await firstValueFrom(
+      this.httpService.post(
+        this.dadataUrl,
+        { query: inn },
+        {
+          headers: {
+            Authorization: this.dadataToken,
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+        },
+      ),
+    );
+    const orgInfo = data.suggestions[0];
+
+    return new Organisation({ apiDoc: orgInfo });
   }
 
   async updateOrgData(

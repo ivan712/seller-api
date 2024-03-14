@@ -3,16 +3,26 @@ import { ValidationData } from '../validation-data.entity';
 import { IValidationDataRepository } from '../interfaces/validation-code-repository.interface';
 import { Injectable } from '@nestjs/common';
 import { DataType } from '@prisma/client';
+import { IDbOptions } from '../../shared/db-options.interface';
+import { Repository } from 'src/shared/repository';
 
 @Injectable()
-export class ValidationDataRepository implements IValidationDataRepository {
-  constructor(private prisma: PrismaService) {}
+export class ValidationDataRepository
+  extends Repository
+  implements IValidationDataRepository
+{
+  constructor(protected prisma: PrismaService) {
+    super(prisma);
+  }
 
   async get(
     userContact: string,
     dataType: DataType,
+    dbOptions?: IDbOptions,
   ): Promise<ValidationData | null> {
-    const validationData = await this.prisma.validationData.findUnique({
+    const validationData = await this.getClient(
+      dbOptions,
+    ).validationData.findUnique({
       where: {
         userContact_dataType: {
           dataType,
@@ -26,8 +36,11 @@ export class ValidationDataRepository implements IValidationDataRepository {
     return new ValidationData(validationData);
   }
 
-  async upsertData(validationData: ValidationData): Promise<void> {
-    await this.prisma.validationData.upsert({
+  async upsertData(
+    validationData: ValidationData,
+    dbOptions?: IDbOptions,
+  ): Promise<void> {
+    await this.getClient(dbOptions).validationData.upsert({
       where: {
         userContact_dataType: {
           dataType: validationData.getDataType(),
@@ -47,8 +60,12 @@ export class ValidationDataRepository implements IValidationDataRepository {
     });
   }
 
-  async deleteOne(userContact: string, dataType: DataType) {
-    await this.prisma.validationData.delete({
+  async deleteOne(
+    userContact: string,
+    dataType: DataType,
+    dbOptions?: IDbOptions,
+  ) {
+    await this.getClient(dbOptions).validationData.delete({
       where: {
         userContact_dataType: {
           dataType,

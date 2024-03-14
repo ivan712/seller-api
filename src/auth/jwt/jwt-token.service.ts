@@ -4,6 +4,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CryptoService } from '../crypto.service';
 import { IPayloadUpdateData } from '../interfaces/payload-update-data.interface';
+import { IRefreshToken } from '../interfaces/refresh-token.interface';
 
 @Injectable()
 export class JwtTokensService {
@@ -40,9 +41,7 @@ export class JwtTokensService {
     };
   }
 
-  async generateRefreshJwt(
-    payloadData: IPayloadData,
-  ): Promise<{ refreshJwt: string; jwtid: string }> {
+  async generateRefreshJwt(payloadData: IPayloadData): Promise<IRefreshToken> {
     const jwtid = await this.cryptoService.generateRandomString();
     const refreshJwt = await this.jwtService.signAsync(payloadData, {
       expiresIn: Number(
@@ -52,5 +51,17 @@ export class JwtTokensService {
       jwtid,
     });
     return { refreshJwt, jwtid };
+  }
+
+  async generateAccessAndRefreshJwt(
+    userId: string,
+  ): Promise<{ accessToken: string; refreshToken: IRefreshToken }> {
+    const payload = { userId };
+    const [accessToken, refreshToken] = await Promise.all([
+      this.generateAccessJwt(payload),
+      this.generateRefreshJwt(payload),
+    ]);
+
+    return { accessToken, refreshToken };
   }
 }

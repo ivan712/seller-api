@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { UserService } from '../user/user.service';
-import { ITokens } from './interfaces/access-token.interface';
+import { ITokens } from './interfaces/access-refresh-tokens.interface';
 import { ICreateUser } from '../user/interfaces/create-user.interface';
 import { RefreshTokenRepository } from './repositories/refresh-token.repository';
 import {
@@ -21,6 +21,7 @@ import { ValidationDataRepository } from './repositories/validation-data.reposit
 import { JwtTokensService } from './jwt/jwt-token.service';
 import { CryptoService } from './crypto.service';
 import { ConfigService } from '@nestjs/config';
+import { IDbOptions } from 'src/shared/db-options.interface';
 
 @Injectable()
 export class AuthService {
@@ -170,29 +171,15 @@ export class AuthService {
     );
     if (!isPasswordValid)
       throw new BadRequestException(INCORRECT_USER_NAME_OR_PASSWORD);
-    const payload = {
-      userId: user.id,
-    };
 
-    const tokensAmount = await this.refreshTokenRepository.count(user.id);
-    if (Number(tokensAmount) >= 5)
-      await this.refreshTokenRepository.deleteAll(user.id);
-
-    const [accessToken, refreshToken] = await Promise.all([
-      this.jwtTokensService.generateAccessJwt(payload),
-      this.jwtTokensService.generateRefreshJwt(payload),
-    ]);
-
-    await this.refreshTokenRepository.add(refreshToken.jwtid, user.id);
-
-    return { accessToken, refreshToken: refreshToken.refreshJwt };
+    return this.newAccessAndRefreshJwt(user.id);
   }
 
   async updatePassword(
     password: string,
     userContact: string,
     tokenId: string,
-  ): Promise<void> {
+  ): Promise<ITokens> {
     const updateTokenId = await this.validationDataRepository.get(
       userContact,
       DataType.passwordUpdateToken,
@@ -207,8 +194,15 @@ export class AuthService {
     );
 
     const passwordHash = await this.cryptoService.createDataHash(password);
+    console.log('userContact', userContact);
 
-    await this.userService.setPassword(passwordHash, userContact);
+    const user = await this.userService.getByPhone(
+      updateTokenId.getUserContact(),
+    );
+
+    await this.userService.setPassword(passwordHash, user.id);
+
+    return this.newAccessAndRefreshJwt(user.id);
   }
 
   async refresh(userId: string, tokenId: string): Promise<ITokens> {
@@ -216,11 +210,8 @@ export class AuthService {
 
     if (!tokenInfo) throw new ForbiddenException(INVALID_TOKEN);
 
-    const payload = { userId };
-    const [accessToken, refreshToken] = await Promise.all([
-      this.jwtTokensService.generateAccessJwt(payload),
-      this.jwtTokensService.generateRefreshJwt(payload),
-    ]);
+    const { accessToken, refreshToken } =
+      await this.jwtTokensService.generateAccessAndRefreshJwt(userId);
 
     await this.refreshTokenRepository.update(tokenId, refreshToken.jwtid);
 
@@ -236,5 +227,28 @@ export class AuthService {
     if (!tokenInfo) throw new BadRequestException(INVALID_TOKEN);
 
     await this.refreshTokenRepository.deleteOne(tokenId);
+  }
+
+  private async newAccessAndRefreshJwt(
+    userId: string,
+    dbOptions?: IDbOptions,
+  ): Promise<ITokens> {
+    const tokensAmount = await this.refreshTokenRepository.count(
+      userId,
+      dbOptions,
+    );
+    if (Number(tokensAmount) >= 5)
+      await this.refreshTokenRepository.deleteAll(userId, dbOptions);
+
+    const { accessToken, refreshToken } =
+      await this.jwtTokensService.generateAccessAndRefreshJwt(userId);
+
+    await this.refreshTokenRepository.add(
+      refreshToken.jwtid,
+      userId,
+      dbOptions,
+    );
+
+    return { accessToken, refreshToken: refreshToken.refreshJwt };
   }
 }

@@ -1,3 +1,5 @@
+import { SurveyAnswer as SurveyAnswerModel } from '@prisma/client';
+
 export enum SalePlace {
   SellerCity = 'seller_city',
   RF = 'RF',
@@ -9,13 +11,13 @@ export enum WorkingModel {
 }
 
 export class SurveyAnswer {
-  constructor({ pgDoc }: { pgDoc: any }) {
+  constructor({ pgDoc }: { pgDoc: SurveyAnswerModel }) {
     this.region = pgDoc.region;
     this.city = pgDoc.city;
-    this.salePlace = pgDoc.salePlace;
+    this.salePlace = pgDoc.salePlace as SalePlace;
     this.mandatoryCertification = pgDoc.mandatoryCertification;
     this.productCategory = pgDoc.productCategory;
-    this.workingModel = pgDoc.workingModel;
+    this.workingModel = pgDoc.workingModel as WorkingModel;
     this.sellingOtherMarketplace = pgDoc.sellingOtherMarketplace;
   }
 

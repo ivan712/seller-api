@@ -112,10 +112,7 @@ export class AuthController {
     @TokenInfo()
     { tokenId, userContact }: { tokenId: string; userContact: string },
   ) {
-    await this.authService.updatePassword(dto.password, userContact, tokenId);
-    return {
-      message: OK_MESSAGE,
-    };
+    return this.authService.updatePassword(dto.password, userContact, tokenId);
   }
 
   @Post('login')

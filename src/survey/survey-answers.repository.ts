@@ -14,7 +14,10 @@ export class SurveyAnswersRepository
     super(prisma);
   }
 
-  async getAnswersByUserId(id: string, dbOptions?: any): Promise<SurveyAnswer> {
+  async getAnswersByUserId(
+    id: string,
+    dbOptions?: IDbOptions,
+  ): Promise<SurveyAnswer> {
     const pgDoc = await this.getClient(dbOptions).surveyAnswer.findUnique({
       where: {
         userId: id,

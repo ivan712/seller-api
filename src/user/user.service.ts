@@ -22,7 +22,7 @@ export class UserService {
     return this.userRepository.getById(id);
   }
 
-  async setPassword(passwordHash: string, phoneNumber: string) {
-    await this.userRepository.update({ passwordHash }, phoneNumber);
+  async setPassword(passwordHash: string, userId: string) {
+    await this.userRepository.update({ passwordHash }, userId);
   }
 }
