@@ -1,4 +1,4 @@
-import { PrismaService } from '../db/prisma.service';
+import { PrismaService } from './prisma.service';
 import { IDbOptions } from './db-options.interface';
 
 export abstract class Repository {

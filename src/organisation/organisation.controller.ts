@@ -4,6 +4,7 @@ import {
   Get,
   Inject,
   Param,
+  Patch,
   Post,
   Put,
   UseGuards,
@@ -21,7 +22,22 @@ import { User as UserDecorator } from '../auth/jwt/decorators/user.decorator';
 import { User } from '../user/user.entity';
 import { CreateOrgValidationPipe } from './create-org-validation.pipe';
 import { BitrixAuthGuard } from '../auth/jwt/guards/bitrix.guard';
+import {
+  // ApiBasicAuth,
+  ApiBearerAuth,
+  ApiBody,
+  // ApiHeader,
+  ApiOperation,
+  ApiResponse,
+  // ApiSecurity,
+  ApiTags,
+} from '@nestjs/swagger';
+import {
+  apiBodyOrgRegisterSchema,
+  successOrgRegisterSchema,
+} from './swagger/register.schema';
 
+@ApiTags('Organisation')
 @Controller('v1/organisation')
 export class OrganisationController {
   constructor(
@@ -29,24 +45,41 @@ export class OrganisationController {
     private organisationService: OrganisationService,
   ) {}
 
+  @Post('registration')
+  @ApiOperation({ summary: 'register organisation' })
+  @ApiBody(apiBodyOrgRegisterSchema)
+  @ApiResponse(successOrgRegisterSchema)
+  // @ApiResponse(badRequestPreregisterSchema)
   @Roles(Role.OWNER)
   @UseGuards(RolesGuard)
   @UseGuards(JwtAuthGuard)
-  @Post('registration')
   async createOrg(
     @Body(new CreateOrgValidationPipe()) dto: CreateOrganisationDto,
     @UserDecorator() user: User,
   ) {
-    return this.organisationService.create(
+    await this.organisationService.create(
       {
         ...dto,
         status: OrgStatus.SENT_TO_MODERATION,
       },
       user,
     );
+
+    return {
+      message: OK_MESSAGE,
+    };
   }
 
-  @Put('registration/confirm/:inn')
+  // @ApiHeader({
+  //   name: 'Authorization',
+  //   required: true,
+  //   description: 'unique id for correlated logs',
+  //   example: '7ea2c7f7-8b46-475d-86f8-7aaaa9e4a35b',
+  // })
+  @ApiBearerAuth()
+  // @ApiBasicAuth('Authorization')
+  @Patch('registration/confirm/:inn')
+  // @ApiAuth()
   @UseGuards(BitrixAuthGuard)
   async confirmRegistration(@Param('inn', InnValidationPipe) inn: string) {
     await this.organisationService.updateOrgData(inn, {

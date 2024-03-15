@@ -21,7 +21,7 @@ import { ValidationDataRepository } from './repositories/validation-data.reposit
 import { JwtTokensService } from './jwt/jwt-token.service';
 import { CryptoService } from './crypto.service';
 import { ConfigService } from '@nestjs/config';
-import { IDbOptions } from 'src/shared/db-options.interface';
+import { IDbOptions } from 'src/db/db-options.interface';
 
 @Injectable()
 export class AuthService {
@@ -30,24 +30,23 @@ export class AuthService {
   private passwordUpdateTokenExpireAt;
 
   constructor(
-    @Inject(ConfigService) private readonly configService: ConfigService,
-    @Inject(UserService) private readonly userService: UserService,
+    configService: ConfigService,
+    private userService: UserService,
     @Inject(RefreshTokenRepository)
     private readonly refreshTokenRepository: RefreshTokenRepository,
     @Inject(ValidationDataRepository)
     private readonly validationDataRepository: ValidationDataRepository,
-    @Inject(JwtTokensService)
     private readonly jwtTokensService: JwtTokensService,
-    @Inject(CryptoService) private readonly cryptoService: CryptoService,
+    private readonly cryptoService: CryptoService,
   ) {
-    this.verificationCodeLength = Number(
-      this.configService.get('VERIFICATION_CODE_LENGTH'),
+    this.verificationCodeLength = +configService.get(
+      'VERIFICATION_CODE_LENGTH',
     );
-    this.verificationCodeExpireAt = Number(
-      this.configService.get('VERIFICATION_CODE_EXPIRES_AT'),
+    this.verificationCodeExpireAt = +configService.get(
+      'VERIFICATION_CODE_EXPIRES_AT',
     );
-    this.passwordUpdateTokenExpireAt = Number(
-      this.configService.get('DATA_UPDATE_TOKEN_EXPIRES_AT'),
+    this.passwordUpdateTokenExpireAt = +configService.get(
+      'DATA_UPDATE_TOKEN_EXPIRES_AT',
     );
   }
 
@@ -57,8 +56,6 @@ export class AuthService {
     if (user) throw new BadRequestException(USER_ALREADY_EXIST);
 
     await this.upsertValidationCode(registerData.phoneNumber);
-
-    return;
   }
 
   async upsertValidationCode(userContact: string): Promise<void> {

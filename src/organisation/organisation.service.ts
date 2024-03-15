@@ -19,12 +19,17 @@ import {
   defaultNackErrorHandler,
 } from '@golevelup/nestjs-rabbitmq';
 import { bitrixCreateOrgResponseSudscriberConfig } from '../rabbit/config';
+import { PrismaService } from '../db/prisma.service';
+import { UserRepository } from '../user/user.repository';
+import { IUserRepository } from '../user/interfaces/user-repository.interface';
 
 @Injectable()
 export class OrganisationService {
   constructor(
     @Inject(OrganisationRepository)
     private organisationRepository: IOrganisationRepository,
+    @Inject(UserRepository) private userRepository: IUserRepository,
+    private prismaService: PrismaService,
   ) {}
 
   async create(data: ICreateOrganisationData, user: User): Promise<void> {
@@ -34,7 +39,12 @@ export class OrganisationService {
     const org = await this.getByInn(data.inn);
     if (org) throw new BadRequestException(ORG_ALREADY_EXIST);
 
-    await this.organisationRepository.create(data);
+    await this.prismaService.$transaction(async (trxn) => {
+      const newOrg = await this.organisationRepository.create(data, { trxn });
+      await this.userRepository.update({ organisationId: newOrg.id }, user.id, {
+        trxn,
+      });
+    });
   }
 
   async getByInn(inn: string): Promise<Organisation | null> {

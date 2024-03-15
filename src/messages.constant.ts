@@ -25,3 +25,5 @@ export const API_INFO_NOT_FOUND =
 
 export const NOT_FOUND_INFO_ABOUT_ORG =
   'Не найдена информация об организации пользователя';
+
+export const SURVEY_ANSWERS_ALREADY_EXIST = 'Пользователь уже отправил ответы';

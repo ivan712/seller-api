@@ -1,4 +1,4 @@
-import { IDbOptions } from '../../shared/db-options.interface';
+import { IDbOptions } from '../../db/db-options.interface';
 import { User } from '../user.entity';
 import { ICreateUser } from './create-user.interface';
 
@@ -8,7 +8,7 @@ export interface IUserRepository {
   getById(id: string, dbOptions?: IDbOptions): Promise<User | null>;
   update(
     userData: Partial<Omit<User, 'id'>>,
-    phoneNumber: string,
+    userId: string,
     dbOptions?: IDbOptions,
   ): Promise<void>;
 }

@@ -3,8 +3,8 @@ import { ValidationData } from '../validation-data.entity';
 import { IValidationDataRepository } from '../interfaces/validation-code-repository.interface';
 import { Injectable } from '@nestjs/common';
 import { DataType } from '@prisma/client';
-import { IDbOptions } from '../../shared/db-options.interface';
-import { Repository } from 'src/shared/repository';
+import { IDbOptions } from '../../db/db-options.interface';
+import { Repository } from 'src/db/repository';
 
 @Injectable()
 export class ValidationDataRepository

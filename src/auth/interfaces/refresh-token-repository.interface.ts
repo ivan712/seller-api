@@ -1,4 +1,4 @@
-import { IDbOptions } from '../../shared/db-options.interface';
+import { IDbOptions } from '../../db/db-options.interface';
 
 export interface IRefreshTokenRepository {
   add(token: string, userId: string, dbOptions?: IDbOptions): Promise<void>;

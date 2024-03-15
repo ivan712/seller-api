@@ -1,4 +1,4 @@
-import { IDbOptions } from '../../shared/db-options.interface';
+import { IDbOptions } from '../../db/db-options.interface';
 import { Organisation } from '../organisation.entity';
 import { ICreateOrganisationData } from './create-organisation.interface';
 

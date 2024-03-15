@@ -1,4 +1,4 @@
-import { IDbOptions } from '../../shared/db-options.interface';
+import { IDbOptions } from '../../db/db-options.interface';
 import { DataType, ValidationData } from '../validation-data.entity';
 
 export interface IValidationDataRepository {

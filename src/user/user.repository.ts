@@ -3,8 +3,8 @@ import { IUserRepository } from './interfaces/user-repository.interface';
 import { ICreateUser } from './interfaces/create-user.interface';
 import { User } from './user.entity';
 import { PrismaService } from '../db/prisma.service';
-import { Repository } from '../shared/repository';
-import { IDbOptions } from '../shared/db-options.interface';
+import { Repository } from '../db/repository';
+import { IDbOptions } from '../db/db-options.interface';
 
 @Injectable()
 export class UserRepository extends Repository implements IUserRepository {
@@ -65,7 +65,8 @@ export class UserRepository extends Repository implements IUserRepository {
     const updateData = userData.organisationId
       ? { ...userData, organisationId: userData.organisationId }
       : userData;
-    console.log('updateData', updateData);
+    console.log('updateData', updateData.organisationId);
+    console.log('userId', userId);
     await this.getClient(dbOptions).user.update({
       data: updateData,
       where: { id: userId },

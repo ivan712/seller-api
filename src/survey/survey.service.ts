@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -9,7 +10,10 @@ import { SurveyAnswersRepository } from './survey-answers.repository';
 import { ISurveyAnswersRepository } from './survey-answers.interface';
 import { OrganisationRepository } from '../organisation/organisation.repository';
 import { IOrganisationRepository } from '../organisation/interfaces/organisation-repository.interface';
-import { NOT_FOUND_INFO_ABOUT_ORG } from '../messages.constant';
+import {
+  NOT_FOUND_INFO_ABOUT_ORG,
+  SURVEY_ANSWERS_ALREADY_EXIST,
+} from '../messages.constant';
 import { PrismaService } from '../db/prisma.service';
 import { RabbitService } from '../rabbit/rabbit.service';
 
@@ -28,11 +32,17 @@ export class SurveyService {
     const org = await this.organisationRepository.getByUserId(userId);
     if (!org) throw new NotFoundException(NOT_FOUND_INFO_ABOUT_ORG);
 
+    const isAnswersExist =
+      await this.surveyAnswersRepository.getAnswersByUserId(userId);
+
+    if (isAnswersExist)
+      throw new BadRequestException(SURVEY_ANSWERS_ALREADY_EXIST);
+
     await this.prismaService.$transaction(async (trxn) => {
-      await this.surveyAnswersRepository.upsert(userId, answers, { trxn });
+      await this.surveyAnswersRepository.create(userId, answers, { trxn });
 
       const isSentToRabbit = await this.rabbitService.createOrg(org);
-      if (isSentToRabbit !== true) throw new InternalServerErrorException();
+      if (!isSentToRabbit) throw new InternalServerErrorException();
     });
   }
 

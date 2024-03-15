@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { IRefreshTokenRepository } from '../interfaces/refresh-token-repository.interface';
 import { PrismaService } from '../../db/prisma.service';
-import { Repository } from '../../shared/repository';
-import { IDbOptions } from '../../shared/db-options.interface';
+import { Repository } from '../../db/repository';
+import { IDbOptions } from '../../db/db-options.interface';
 
 @Injectable()
 export class RefreshTokenRepository
