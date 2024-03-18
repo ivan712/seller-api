@@ -63,17 +63,16 @@ import {
 } from './swagger/password-reset-conf.schema';
 
 @ApiTags('Auth')
-@ApiBearerAuth()
 @Controller('v1/auth')
 export class AuthController {
   constructor(@Inject(AuthService) private authService: AuthService) {}
 
   @Post('preregister')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get sms code for registration' })
   @ApiBody(apiBodyPreregisterSchema)
   @ApiResponse(successPreregisterSchema)
   @ApiResponse(badRequestPreregisterSchema)
-  @HttpCode(HttpStatus.OK)
   async preregister(@Body() dto: PhoneNumberDto) {
     dto.phoneNumber = dto.phoneNumber.replace(/[^!\d]/g, '');
 
@@ -102,6 +101,7 @@ export class AuthController {
 
   @UseGuards(JwtUpdateGuard)
   @Put('password/update')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Update password' })
   @ApiBody(apiBodyPasswordUpdateSchema)
   @ApiResponse(successPasswordUpdateSchema)
@@ -116,22 +116,23 @@ export class AuthController {
   }
 
   @Post('login')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login' })
   @ApiBody(apiBodyLoginSchema)
   @ApiResponse(successLoginSchema)
   @ApiResponse(badRequestLoginSchema)
-  @HttpCode(200)
   async login(@Body() dto: LoginDto) {
     dto.phoneNumber = dto.phoneNumber.replace(/[^!\d]/g, '');
     return this.authService.login(dto.phoneNumber, dto.password);
   }
 
-  @UseGuards(JwtRefreshGuard)
   @Post('refresh')
+  @UseGuards(JwtRefreshGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Refresh tokens' })
   @ApiResponse(successRefreshSchema)
   @ApiResponse(invalidRefreshTokenSchema)
-  @HttpCode(200)
   async refresh(
     @TokenInfo()
     { userId, tokenId }: { userId: string; tokenId: string },
@@ -139,12 +140,13 @@ export class AuthController {
     return this.authService.refresh(userId, tokenId);
   }
 
-  @UseGuards(JwtRefreshGuard)
   @Post('logout')
+  @UseGuards(JwtRefreshGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Logout' })
   @ApiResponse(successLogoutSchema)
   @ApiResponse(invalidRefreshTokenSchema)
-  @HttpCode(200)
   async logout(
     @TokenInfo()
     { tokenId }: { tokenId: string },
@@ -156,11 +158,11 @@ export class AuthController {
   }
 
   @Post('password/reset/request')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get sms code for password changing' })
   @ApiBody(apiBodyPassResetReqSchema)
   @ApiResponse(successPassResetReqSchema)
   @ApiResponse(notFoundPassResetReqSchema)
-  @HttpCode(200)
   async passwordResetRequest(@Body() dto: PhoneNumberDto) {
     dto.phoneNumber = dto.phoneNumber.replace(/[^!\d]/g, '');
     await this.authService.passwordResetRequest(dto.phoneNumber);
@@ -176,7 +178,7 @@ export class AuthController {
   @ApiBody(apiBodyPassResetConfSchema)
   @ApiResponse(successPassResetConfSchema)
   @ApiResponse(badRequestPassResetConfSchema)
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   async passwordResetConfirm(@Body() dto: ResetPasswordDto) {
     dto.phoneNumber = dto.phoneNumber.replace(/[^!\d]/g, '');
     return this.authService.passwordResetConfirm(

@@ -65,8 +65,6 @@ export class UserRepository extends Repository implements IUserRepository {
     const updateData = userData.organisationId
       ? { ...userData, organisationId: userData.organisationId }
       : userData;
-    console.log('updateData', updateData.organisationId);
-    console.log('userId', userId);
     await this.getClient(dbOptions).user.update({
       data: updateData,
       where: { id: userId },

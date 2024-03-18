@@ -12,7 +12,7 @@ export const apiBodyRegisterSchema = {
       },
       validationCode: {
         type: 'string',
-        example: '0123',
+        example: '012345',
         description: 'validation code',
       },
       name: {
@@ -22,7 +22,7 @@ export const apiBodyRegisterSchema = {
       },
       role: {
         type: 'string',
-        example: 'admin',
+        example: 'owner',
         description: "user's role",
       },
     },

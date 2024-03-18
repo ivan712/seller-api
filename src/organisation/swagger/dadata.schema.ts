@@ -1,7 +1,9 @@
 import { HttpStatus } from '@nestjs/common';
-import { OK_MESSAGE, ORG_ALREADY_EXIST } from '../../messages.constant';
+import { INVALID_INN } from 'src/messages.constant';
 
-export const apiBodyOrgRegisterSchema = {
+export const successDadataSchema = {
+  status: HttpStatus.OK,
+  description: 'Organisation info from dadata',
   schema: {
     type: 'object',
     properties: {
@@ -35,21 +37,7 @@ export const apiBodyOrgRegisterSchema = {
   },
 };
 
-export const successOrgRegisterSchema = {
-  status: HttpStatus.CREATED,
-  description: 'Organisation has been created',
-  schema: {
-    type: 'object',
-    properties: {
-      message: {
-        type: 'string',
-        example: OK_MESSAGE,
-      },
-    },
-  },
-};
-
-export const badRequestOrgRegisterSchema = {
+export const badRquestInvalidInnSchema = {
   status: HttpStatus.BAD_REQUEST,
   description: 'Bad Request',
   schema: {
@@ -61,7 +49,7 @@ export const badRequestOrgRegisterSchema = {
       },
       message: {
         type: 'string',
-        example: ORG_ALREADY_EXIST,
+        example: INVALID_INN,
       },
     },
   },

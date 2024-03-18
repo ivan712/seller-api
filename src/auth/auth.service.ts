@@ -191,7 +191,6 @@ export class AuthService {
     );
 
     const passwordHash = await this.cryptoService.createDataHash(password);
-    console.log('userContact', userContact);
 
     const user = await this.userService.getByPhone(
       updateTokenId.getUserContact(),

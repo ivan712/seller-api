@@ -46,7 +46,6 @@ describe('RoomController (e2e)', () => {
         .send({ phoneNumber })
         .expect(HttpStatus.BAD_REQUEST)
         .then(({ body }: request.Response) => {
-          console.log(body);
           expect(body.message[0]).toBe(INVALID_PHONE_NUMBER);
         });
     });

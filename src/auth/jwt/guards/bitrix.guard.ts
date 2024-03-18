@@ -16,7 +16,6 @@ export class BitrixAuthGuard extends AuthGuard('local') {
   }
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
-    console.log(request.headers);
     const authToken = request.headers['authorization'];
 
     if (!authToken || authToken !== this.bitrixAuthSecret)

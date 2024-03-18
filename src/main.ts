@@ -17,10 +17,15 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Auth Service')
-    .setDescription('The auth API description')
+    .setDescription('Auth API description')
     .setVersion('1.0')
     .addTag('Auth Api')
     .addBearerAuth()
+    .addBasicAuth({
+      type: 'apiKey',
+      name: 'authorization',
+      in: 'header',
+    })
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('swagger', app, document);

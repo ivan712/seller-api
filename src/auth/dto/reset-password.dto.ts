@@ -4,6 +4,6 @@ export class ResetPasswordDto {
   @IsPhoneNumber()
   phoneNumber: string;
 
-  @Matches(/^[\d]{4}$/)
+  @Matches(/^[\d]{6}$/)
   validationCode: string;
 }

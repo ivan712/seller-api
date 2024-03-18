@@ -41,7 +41,10 @@ export class SurveyService {
     await this.prismaService.$transaction(async (trxn) => {
       await this.surveyAnswersRepository.create(userId, answers, { trxn });
 
-      const isSentToRabbit = await this.rabbitService.createOrg(org);
+      const isSentToRabbit = await this.rabbitService.sendToModeration({
+        org,
+        surveyAnswers: answers,
+      });
       if (!isSentToRabbit) throw new InternalServerErrorException();
     });
   }
