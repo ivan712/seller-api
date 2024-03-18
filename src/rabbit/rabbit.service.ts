@@ -1,7 +1,7 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Injectable } from '@nestjs/common';
 import { Organisation } from '../organisation/organisation.entity';
-import { SurveyAnswer } from 'src/survey/answer.entity';
+import { SurveyAnswer } from '../survey/answer.entity';
 
 @Injectable()
 export class RabbitService {

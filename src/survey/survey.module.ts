@@ -5,7 +5,7 @@ import { PrismaService } from '../db/prisma.service';
 import { SurveyAnswersRepository } from './survey-answers.repository';
 import { UserModule } from '../user/user.module';
 import { RabbitModule } from '../rabbit/rabbit.module';
-import { OrganisationModule } from 'src/organisation/organisation.module';
+import { OrganisationModule } from '../organisation/organisation.module';
 
 @Module({
   imports: [UserModule, RabbitModule, OrganisationModule],

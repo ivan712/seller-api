@@ -7,7 +7,7 @@ import { InnValidationPipe } from './inn-validation.pipe';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { UserModule } from '../user/user.module';
-import { RabbitModule } from 'src/rabbit/rabbit.module';
+import { RabbitModule } from '../rabbit/rabbit.module';
 
 @Module({
   imports: [PrismaModule, HttpModule, UserModule, RabbitModule],

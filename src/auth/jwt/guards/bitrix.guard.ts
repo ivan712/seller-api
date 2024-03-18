@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
-import { UNAUTHORIZED } from 'src/messages.constant';
+import { UNAUTHORIZED } from '../../../messages.constant';
 
 @Injectable()
 export class BitrixAuthGuard extends AuthGuard('local') {

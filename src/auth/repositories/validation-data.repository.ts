@@ -4,7 +4,7 @@ import { IValidationDataRepository } from '../interfaces/validation-code-reposit
 import { Injectable } from '@nestjs/common';
 import { DataType } from '@prisma/client';
 import { IDbOptions } from '../../db/db-options.interface';
-import { Repository } from 'src/db/repository';
+import { Repository } from '../../db/repository';
 
 @Injectable()
 export class ValidationDataRepository

@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { INVALID_INN } from 'src/messages.constant';
+import { INVALID_INN } from '../../messages.constant';
 
 export const successDadataSchema = {
   status: HttpStatus.OK,

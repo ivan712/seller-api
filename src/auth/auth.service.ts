@@ -21,7 +21,7 @@ import { ValidationDataRepository } from './repositories/validation-data.reposit
 import { JwtTokensService } from './jwt/jwt-token.service';
 import { CryptoService } from './crypto.service';
 import { ConfigService } from '@nestjs/config';
-import { IDbOptions } from 'src/db/db-options.interface';
+import { IDbOptions } from '../db/db-options.interface';
 
 @Injectable()
 export class AuthService {

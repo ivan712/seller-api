@@ -3,7 +3,7 @@ import { PrismaService } from '../db/prisma.service';
 import { ISurveyAnswersRepository } from './survey-answers.interface';
 import { SurveyAnswer } from './answer.entity';
 import { IDbOptions } from '../db/db-options.interface';
-import { Repository } from 'src/db/repository';
+import { Repository } from '../db/repository';
 
 @Injectable()
 export class SurveyAnswersRepository
