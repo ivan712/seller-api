@@ -80,7 +80,7 @@ export class OrganisationController {
   @Patch('registration/confirm/:inn')
   @UseGuards(BitrixAuthGuard)
   @ApiBasicAuth()
-  @ApiOperation({ summary: 'confirm organisation registration from  bitrix' })
+  @ApiOperation({ summary: 'Confirm organisation registration from  bitrix' })
   @ApiResponse(successOrgConfirmOrRejectSchema)
   @ApiResponse(notFoundOrgConfirmOrRejectSchema)
   async confirmRegistration(@Param('inn', InnValidationPipe) inn: string) {

@@ -333,10 +333,9 @@ describe('UserService', () => {
       } as User);
       cryptoService.validateData.mockResolvedValueOnce(true);
       refreshTokenRepository.count.mockResolvedValueOnce(4);
-      jwtTokensService.generateAccessJwt.mockResolvedValueOnce(accessToken);
-      jwtTokensService.generateRefreshJwt.mockResolvedValueOnce({
-        refreshJwt: 'refreshJwt',
-        jwtid: 'jwtid',
+      jwtTokensService.generateAccessAndRefreshJwt.mockResolvedValueOnce({
+        accessToken,
+        refreshToken,
       });
       refreshTokenRepository.add.mockResolvedValueOnce(null);
       expect(await authService.login('', '')).toMatchObject({
@@ -358,10 +357,9 @@ describe('UserService', () => {
       } as User);
       cryptoService.validateData.mockResolvedValueOnce(true);
       refreshTokenRepository.count.mockResolvedValueOnce(7);
-      jwtTokensService.generateAccessJwt.mockResolvedValueOnce(accessToken);
-      jwtTokensService.generateRefreshJwt.mockResolvedValueOnce({
-        refreshJwt: 'refreshJwt',
-        jwtid: 'jwtid',
+      jwtTokensService.generateAccessAndRefreshJwt.mockResolvedValueOnce({
+        accessToken,
+        refreshToken,
       });
 
       expect(await authService.login('', '')).toMatchObject({
@@ -391,17 +389,32 @@ describe('UserService', () => {
     });
 
     it('success', async () => {
+      const accessToken = 'token';
+      const refreshToken = {
+        refreshJwt: 'refreshTokent',
+        jwtid: 'jwtid-token',
+      };
+      const userId = 'user-uid';
+
       const phoneNumber = '444';
       const password = '888';
       const passwordHash = 'hash';
+      refreshTokenRepository.count.mockResolvedValueOnce(1);
       validationDataRepository.get.mockResolvedValueOnce({
         getData: () => '123',
+        getUserContact: () => phoneNumber,
       } as ValidationData);
       cryptoService.createDataHash.mockResolvedValueOnce(passwordHash);
       userService.setPassword.mockResolvedValueOnce(undefined);
+      userService.getByPhone.mockResolvedValueOnce({ id: userId } as User);
+      jwtTokensService.generateAccessAndRefreshJwt.mockResolvedValueOnce({
+        accessToken,
+        refreshToken,
+      });
+
       expect(
         await authService.updatePassword(password, phoneNumber, '123'),
-      ).toBeUndefined();
+      ).toMatchObject({ accessToken, refreshToken: refreshToken.refreshJwt });
       expect(validationDataRepository.deleteOne).toHaveBeenCalledWith(
         phoneNumber,
         DataType.passwordUpdateToken,
@@ -409,7 +422,7 @@ describe('UserService', () => {
       expect(cryptoService.createDataHash).toHaveBeenCalledWith(password);
       expect(userService.setPassword).toHaveBeenCalledWith(
         passwordHash,
-        phoneNumber,
+        userId,
       );
     });
 
@@ -427,8 +440,10 @@ describe('UserService', () => {
         };
         const tokenId = 'tokenId';
         refreshTokenRepository.getOne.mockResolvedValueOnce(tokenId);
-        jwtTokensService.generateAccessJwt.mockResolvedValueOnce(accessToken);
-        jwtTokensService.generateRefreshJwt.mockResolvedValueOnce(refreshToken);
+        jwtTokensService.generateAccessAndRefreshJwt.mockResolvedValueOnce({
+          accessToken,
+          refreshToken,
+        });
         expect(await authService.refresh('', tokenId)).toMatchObject({
           accessToken,
           refreshToken: refreshToken.refreshJwt,
