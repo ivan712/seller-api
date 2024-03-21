@@ -84,15 +84,15 @@ enum WorkingModel {
 }
 
 model SurveyAnswer {
-  userId                  String       @id
-  user                    User?        @relation(fields: [userId], references: [id])
-  region                  String
-  city                    String
-  salePlace               SalePlace
-  mandatoryCertification  Boolean
-  productCategory         String[]
-  workingModel            WorkingModel
-  sellingOtherMarketplace Boolean
-  createdAt               DateTime     @default(now())
-  updatedAt               DateTime     @updatedAt
+  userId                         String       @id
+  user                           User?        @relation(fields: [userId], references: [id])
+  region                         String
+  city                           String
+  salePlace                      SalePlace
+  mandatoryCertification         Boolean
+  productCategory                String[]
+  workingModel                   WorkingModel
+  experienceOnOthersMarketplaces Boolean
+  createdAt                      DateTime     @default(now())
+  updatedAt                      DateTime     @updatedAt
 }

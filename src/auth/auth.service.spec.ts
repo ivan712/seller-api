@@ -18,7 +18,7 @@ import {
 import { DataType, ValidationData } from './validation-data.entity';
 import { ICreateUser } from '../user/interfaces/create-user.interface';
 
-describe('UserService', () => {
+describe('AuthService', () => {
   let authService: AuthService;
   let refreshTokenRepository: DeepMocked<RefreshTokenRepository>;
   let validationDataRepository: DeepMocked<ValidationDataRepository>;

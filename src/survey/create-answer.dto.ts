@@ -29,5 +29,5 @@ export class CreateAnswerDto {
   workingModel: WorkingModel;
 
   @IsBoolean()
-  sellingOtherMarketplace: boolean;
+  experienceOnOthersMarketplaces: boolean;
 }

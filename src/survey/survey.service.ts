@@ -2,7 +2,6 @@ import {
   BadRequestException,
   Inject,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
 import { SurveyAnswer } from './answer.entity';
@@ -14,8 +13,6 @@ import {
   NOT_FOUND_INFO_ABOUT_ORG,
   SURVEY_ANSWERS_ALREADY_EXIST,
 } from '../messages.constant';
-import { PrismaService } from '../db/prisma.service';
-import { RabbitService } from '../rabbit/rabbit.service';
 
 @Injectable()
 export class SurveyService {
@@ -24,8 +21,6 @@ export class SurveyService {
     private surveyAnswersRepository: ISurveyAnswersRepository,
     @Inject(OrganisationRepository)
     private organisationRepository: IOrganisationRepository,
-    private prismaService: PrismaService,
-    private rabbitService: RabbitService,
   ) {}
 
   async answerQuestions(userId: string, answers: SurveyAnswer): Promise<void> {
@@ -38,15 +33,7 @@ export class SurveyService {
     if (isAnswersExist)
       throw new BadRequestException(SURVEY_ANSWERS_ALREADY_EXIST);
 
-    await this.prismaService.$transaction(async (trxn) => {
-      await this.surveyAnswersRepository.create(userId, answers, { trxn });
-
-      const isSentToRabbit = await this.rabbitService.sendToModeration({
-        org,
-        surveyAnswers: answers,
-      });
-      if (!isSentToRabbit) throw new InternalServerErrorException();
-    });
+    await this.surveyAnswersRepository.create(userId, answers);
   }
 
   async getUserAnswers(userId: string): Promise<SurveyAnswer> {

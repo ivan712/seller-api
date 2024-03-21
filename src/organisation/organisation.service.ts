@@ -7,18 +7,13 @@ import {
 import { OrganisationRepository } from './organisation.repository';
 import { IOrganisationRepository } from './interfaces/organisation-repository.interface';
 import { ICreateOrganisationData } from './interfaces/create-organisation.interface';
-import { OrgStatus, Organisation } from './organisation.entity';
+import { Organisation } from './organisation.entity';
 import {
   ORG_ALREADY_EXIST,
   ORG_NOT_FOUND,
   USER_ALREADY_HAS_ORGANISATION,
 } from '../messages.constant';
 import { User } from '../user/user.entity';
-import {
-  RabbitSubscribe,
-  defaultNackErrorHandler,
-} from '@golevelup/nestjs-rabbitmq';
-import { bitrixCreateOrgResponseSudscriberConfig } from '../rabbit/config';
 import { PrismaService } from '../db/prisma.service';
 import { UserRepository } from '../user/user.repository';
 import { IUserRepository } from '../user/interfaces/user-repository.interface';
@@ -62,15 +57,5 @@ export class OrganisationService {
 
   async getOrgInfoFromDadata(inn: string): Promise<Organisation> {
     return this.organisationRepository.getOrgInfoFromDadata(inn);
-  }
-
-  @RabbitSubscribe({
-    ...bitrixCreateOrgResponseSudscriberConfig,
-    errorHandler: defaultNackErrorHandler,
-  })
-  public async handleBitrixCreateOrgResponseMessage(message: { inn: string }) {
-    await this.updateOrgData(message.inn, {
-      status: OrgStatus.ON_MODERATION,
-    });
   }
 }

@@ -18,7 +18,7 @@ export class SurveyAnswer {
     this.mandatoryCertification = pgDoc.mandatoryCertification;
     this.productCategory = pgDoc.productCategory;
     this.workingModel = pgDoc.workingModel as WorkingModel;
-    this.sellingOtherMarketplace = pgDoc.sellingOtherMarketplace;
+    this.experienceOnOthersMarketplaces = pgDoc.experienceOnOthersMarketplaces;
   }
 
   region: string;
@@ -27,5 +27,5 @@ export class SurveyAnswer {
   mandatoryCertification: boolean;
   productCategory: string[];
   workingModel: WorkingModel;
-  sellingOtherMarketplace: boolean;
+  experienceOnOthersMarketplaces: boolean;
 }

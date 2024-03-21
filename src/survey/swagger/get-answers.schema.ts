@@ -39,10 +39,10 @@ export const successGetUserAnswerSchema = {
         example: 'FBO',
         description: 'Working model: FBO or FBS',
       },
-      sellingOtherMarketplace: {
+      experienceOnOthersMarketplaces: {
         type: 'string',
         example: true,
-        sellingOtherMarketplace:
+        experienceOnOthersMarketplaces:
           'Do you have any sales experience on other marketplaces?',
       },
     },
