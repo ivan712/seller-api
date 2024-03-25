@@ -38,6 +38,10 @@ export const badRequestPreregisterSchema = {
         type: 'integer',
         example: HttpStatus.BAD_REQUEST,
       },
+      error: {
+        type: 'string',
+        example: 'Bad Request',
+      },
       message: {
         type: 'string',
         example: USER_ALREADY_EXIST,

@@ -25,6 +25,10 @@ export const notFoundOrgConfirmOrRejectSchema = {
         type: 'integer',
         example: HttpStatus.NOT_FOUND,
       },
+      error: {
+        type: 'string',
+        example: 'Not Found',
+      },
       message: {
         type: 'string',
         example: ORG_NOT_FOUND,

@@ -67,7 +67,7 @@ export class OrganisationController {
     await this.organisationService.create(
       {
         ...dto,
-        status: OrgStatus.SENT_TO_MODERATION,
+        status: OrgStatus.ON_MODERATION,
       },
       user,
     );
@@ -83,7 +83,9 @@ export class OrganisationController {
   @ApiOperation({ summary: 'Confirm organisation registration from  bitrix' })
   @ApiResponse(successOrgConfirmOrRejectSchema)
   @ApiResponse(notFoundOrgConfirmOrRejectSchema)
-  async confirmRegistration(@Param('inn', InnValidationPipe) inn: string) {
+  async confirmRegistration(
+    @Param('inn', new InnValidationPipe()) inn: string,
+  ) {
     await this.organisationService.updateOrgData(inn, {
       status: OrgStatus.REGISTRED,
     });
@@ -114,7 +116,7 @@ export class OrganisationController {
   @ApiResponse(successDadataSchema)
   @ApiResponse(badRquestInvalidInnSchema)
   async getOrgInfoFromThirdartyApi(
-    @Param('inn', InnValidationPipe) inn: string,
+    @Param('inn', new InnValidationPipe()) inn: string,
   ) {
     return this.organisationService.getOrgInfoFromDadata(inn);
   }

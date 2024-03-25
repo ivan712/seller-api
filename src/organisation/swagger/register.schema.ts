@@ -59,6 +59,10 @@ export const badRequestOrgRegisterSchema = {
         type: 'integer',
         example: HttpStatus.BAD_REQUEST,
       },
+      error: {
+        type: 'string',
+        example: 'Bad Request',
+      },
       message: {
         type: 'string',
         example: ORG_ALREADY_EXIST,

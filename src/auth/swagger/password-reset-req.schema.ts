@@ -40,7 +40,7 @@ export const notFoundPassResetReqSchema = {
       },
       error: {
         type: 'string',
-        example: 'Bad Request',
+        example: 'Not Found',
       },
       message: {
         type: 'string',

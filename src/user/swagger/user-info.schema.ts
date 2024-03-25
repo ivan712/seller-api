@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 
 export const successUserInfoSchema = {
   status: HttpStatus.OK,
-  description: 'User info. Role should be owner or user',
+  description: 'User info',
   schema: {
     type: 'object',
     properties: {

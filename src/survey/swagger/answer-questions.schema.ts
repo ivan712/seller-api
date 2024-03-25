@@ -49,8 +49,8 @@ export const apiAnswerQuestionsSchema = {
 };
 
 export const successAnswerQuestionsSchema = {
-  status: HttpStatus.OK,
-  description: 'Successful confirmation of the organization registration',
+  status: HttpStatus.CREATED,
+  description: 'User has answered questions',
   schema: {
     type: 'object',
     properties: {
@@ -71,6 +71,10 @@ export const badRequestNotFoundOrgSchema = {
       statusCode: {
         type: 'integer',
         example: HttpStatus.NOT_FOUND,
+      },
+      error: {
+        type: 'string',
+        example: 'Not Found',
       },
       message: {
         type: 'string',
