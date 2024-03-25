@@ -1,8 +1,8 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SurveyService } from './survey.service';
-import { OrganisationRepository } from '../organisation/organisation.repository';
-import { Organisation } from '../organisation/organisation.entity';
+import { OrganizationRepository } from '../organization/organization.repository';
+import { Organization } from '../organization/organization.entity';
 import { SurveyAnswersRepository } from './survey-answers.repository';
 import { SurveyAnswer } from './answer.entity';
 import {
@@ -12,7 +12,7 @@ import {
 
 describe('SurveyService', () => {
   let surveyService: SurveyService;
-  let organisationRepository: DeepMocked<OrganisationRepository>;
+  let organizationRepository: DeepMocked<OrganizationRepository>;
   let surveyAnswersRepository: DeepMocked<SurveyAnswersRepository>;
 
   afterEach(() => {
@@ -27,7 +27,7 @@ describe('SurveyService', () => {
       .compile();
 
     surveyService = module.get<SurveyService>(SurveyService);
-    organisationRepository = module.get(OrganisationRepository);
+    organizationRepository = module.get(OrganizationRepository);
     surveyAnswersRepository = module.get(SurveyAnswersRepository);
   });
 
@@ -36,8 +36,8 @@ describe('SurveyService', () => {
     const answers = { userId } as unknown as SurveyAnswer;
 
     it('success', async () => {
-      organisationRepository.getByUserId.mockImplementationOnce((userId) =>
-        Promise.resolve({ userId } as unknown as Organisation),
+      organizationRepository.getByUserId.mockImplementationOnce((userId) =>
+        Promise.resolve({ userId } as unknown as Organization),
       );
       surveyAnswersRepository.getAnswersByUserId.mockResolvedValue(null);
 
@@ -47,8 +47,8 @@ describe('SurveyService', () => {
       expect(spyMock).toHaveBeenCalledWith(userId, answers);
     });
 
-    it('organisation not found', async () => {
-      organisationRepository.getByUserId.mockResolvedValueOnce(null);
+    it('organization not found', async () => {
+      organizationRepository.getByUserId.mockResolvedValueOnce(null);
 
       expect(surveyService.answerQuestions(userId, answers)).rejects.toThrow(
         NOT_FOUND_INFO_ABOUT_ORG,
@@ -56,8 +56,8 @@ describe('SurveyService', () => {
     });
 
     it('user has already answered', async () => {
-      organisationRepository.getByUserId.mockImplementationOnce((userId) =>
-        Promise.resolve({ userId } as unknown as Organisation),
+      organizationRepository.getByUserId.mockImplementationOnce((userId) =>
+        Promise.resolve({ userId } as unknown as Organization),
       );
 
       surveyAnswersRepository.getAnswersByUserId.mockResolvedValue(answers);

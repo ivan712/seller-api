@@ -16,7 +16,7 @@ export const INVALID_OGRN = 'Недопустимое значение ОГРН'
 export const INVALID_ORG_TYPE = 'Недопустимое значение типа организации';
 export const ORG_ALREADY_EXIST =
   'Организация с данным ИНН уже зарегистрирована';
-export const USER_ALREADY_HAS_ORGANISATION =
+export const USER_ALREADY_HAS_ORGANIZATION =
   'У данного пользователя уже есть организация';
 export const ORG_NOT_FOUND = 'Организация не найдена';
 

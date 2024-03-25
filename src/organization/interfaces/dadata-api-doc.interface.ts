@@ -1,4 +1,4 @@
-import { OrgType } from '../organisation.entity';
+import { OrgType } from '../organization.entity';
 
 export interface IApiDocDadata {
   unrestricted_value: string;

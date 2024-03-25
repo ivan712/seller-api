@@ -1,19 +1,19 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { OrganisationService } from './organisation.service';
-import { ICreateOrganisationData } from './interfaces/create-organisation.interface';
+import { OrganizationService } from './organization.service';
+import { ICreateOrganizationData } from './interfaces/create-organization.interface';
 import { User } from '../user/user.entity';
-import { OrganisationRepository } from './organisation.repository';
-import { Organisation } from './organisation.entity';
+import { OrganizationRepository } from './organization.repository';
+import { Organization } from './organization.entity';
 import {
   ORG_ALREADY_EXIST,
   ORG_NOT_FOUND,
-  USER_ALREADY_HAS_ORGANISATION,
+  USER_ALREADY_HAS_ORGANIZATION,
 } from '../messages.constant';
 
-describe('OrganisationService', () => {
-  let organisationService: OrganisationService;
-  let organisationRepository: DeepMocked<OrganisationRepository>;
+describe('OrganizationService', () => {
+  let organizationService: OrganizationService;
+  let organizationRepository: DeepMocked<OrganizationRepository>;
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -21,66 +21,66 @@ describe('OrganisationService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [OrganisationService],
+      providers: [OrganizationService],
     })
       .useMocker(createMock)
       .compile();
 
-    organisationService = module.get<OrganisationService>(OrganisationService);
-    organisationRepository = module.get(OrganisationRepository);
+    organizationService = module.get<OrganizationService>(OrganizationService);
+    organizationRepository = module.get(OrganizationRepository);
   });
 
   describe('create', () => {
     it('success', async () => {
       const data = {
         inn: '1234567890',
-      } as ICreateOrganisationData;
+      } as ICreateOrganizationData;
 
       const user = {
         id: 'user-id',
       } as User;
 
       const spyMock = jest
-        .spyOn(organisationService, 'getByInn')
+        .spyOn(organizationService, 'getByInn')
         .mockImplementation(() => null);
-      organisationRepository.create.mockResolvedValueOnce({
+      organizationRepository.create.mockResolvedValueOnce({
         id: 'org-id',
-      } as Organisation);
+      } as Organization);
 
-      expect(await organisationService.create(data, user)).toBeUndefined();
+      expect(await organizationService.create(data, user)).toBeUndefined();
       expect(spyMock).toHaveBeenCalledWith(data.inn);
     });
 
-    it('user already has an ogranisation', async () => {
+    it('user already has an organization', async () => {
       const user = {
-        organisationId: 'org-id',
+        organizationId: 'org-id',
       } as User;
 
       const data = {
         inn: '1234567890',
-      } as ICreateOrganisationData;
+      } as ICreateOrganizationData;
 
-      expect(organisationService.create(data, user)).rejects.toThrow(
-        USER_ALREADY_HAS_ORGANISATION,
+      expect(organizationService.create(data, user)).rejects.toThrow(
+        USER_ALREADY_HAS_ORGANIZATION,
       );
     });
 
-    it('organisation already exists', async () => {
+    it('organization already exists', async () => {
       const user = {
         id: 'user-id',
       } as User;
 
       const data = {
         inn: '1234567890',
-      } as ICreateOrganisationData;
+      } as ICreateOrganizationData;
 
       const spyMock = jest
-        .spyOn(organisationService, 'getByInn')
+        .spyOn(organizationService, 'getByInn')
         .mockImplementation(
-          () => Promise.resolve(data) as unknown as Promise<Organisation>,
+          () => Promise.resolve(data) as unknown as Promise<Organization>,
         );
 
-      expect(organisationService.create(data, user)).rejects.toThrow(
+      expect(organizationService.create(data, user)).rejects.toThrow(
         ORG_ALREADY_EXIST,
       );
       expect(spyMock).toHaveBeenCalledWith(data.inn);
@@ -91,12 +91,12 @@ describe('OrganisationService', () => {
     it('success', async () => {
       const inn = '1234567890';
       const spyMock = jest
-        .spyOn(organisationService, 'getByInn')
+        .spyOn(organizationService, 'getByInn')
         .mockImplementation(
-          (inn) => Promise.resolve({ inn }) as unknown as Promise<Organisation>,
+          (inn) => Promise.resolve({ inn }) as unknown as Promise<Organization>,
         );
 
-      expect(await organisationService.getByInn(inn)).toMatchObject({ inn });
+      expect(await organizationService.getByInn(inn)).toMatchObject({ inn });
       expect(spyMock).toHaveBeenCalledWith(inn);
     });
   });
@@ -109,34 +109,34 @@ describe('OrganisationService', () => {
 
     it('success', async () => {
       const spyMockGetByInn = jest
-        .spyOn(organisationService, 'getByInn')
+        .spyOn(organizationService, 'getByInn')
         .mockImplementation(
-          (inn) => Promise.resolve({ inn }) as unknown as Promise<Organisation>,
+          (inn) => Promise.resolve({ inn }) as unknown as Promise<Organization>,
         );
 
       const spyMockUpdateOrgData = jest.spyOn(
-        organisationRepository,
+        organizationRepository,
         'updateOrgData',
       );
 
       expect(
-        await organisationService.updateOrgData(inn, data),
+        await organizationService.updateOrgData(inn, data),
       ).toBeUndefined();
       expect(spyMockGetByInn).toHaveBeenCalledWith(inn);
       expect(spyMockUpdateOrgData).toHaveBeenCalledWith(inn, data);
     });
 
-    it('organisation not found', async () => {
+    it('organization not found', async () => {
       const spyMockGetByInn = jest
-        .spyOn(organisationService, 'getByInn')
+        .spyOn(organizationService, 'getByInn')
         .mockImplementation(() => null);
 
       const spyMockUpdateOrgData = jest.spyOn(
-        organisationRepository,
+        organizationRepository,
         'updateOrgData',
       );
 
-      expect(organisationService.updateOrgData(inn, data)).rejects.toThrow(
+      expect(organizationService.updateOrgData(inn, data)).rejects.toThrow(
         ORG_NOT_FOUND,
       );
       expect(spyMockGetByInn).toHaveBeenCalledWith(inn);
@@ -147,11 +147,11 @@ describe('OrganisationService', () => {
   describe('get org info from dadata', () => {
     const inn = '123';
     it('success', async () => {
-      organisationRepository.getOrgInfoFromDadata.mockImplementationOnce(
-        (inn) => Promise.resolve({ inn } as Organisation),
+      organizationRepository.getOrgInfoFromDadata.mockImplementationOnce(
+        (inn) => Promise.resolve({ inn } as Organization),
       );
 
-      expect(await organisationService.getOrgInfoFromDadata(inn)).toMatchObject(
+      expect(await organizationService.getOrgInfoFromDadata(inn)).toMatchObject(
         { inn },
       );
     });

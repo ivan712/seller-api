@@ -64,7 +64,7 @@ export const successAnswerQuestionsSchema = {
 
 export const badRequestNotFoundOrgSchema = {
   status: HttpStatus.NOT_FOUND,
-  description: "User's organisation not found",
+  description: "User's organization not found",
   schema: {
     type: 'object',
     properties: {

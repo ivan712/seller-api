@@ -1,7 +1,7 @@
-import { Organisation } from '../organisation/organisation.entity';
+import { Organization } from '../organization/organization.entity';
 import { Role } from './roles.enum';
 import { User as UserModel } from '@prisma/client';
-import { Organisation as OrgModel } from '@prisma/client';
+import { Organization as OrgModel } from '@prisma/client';
 
 export class User {
   id: string;
@@ -9,20 +9,20 @@ export class User {
   phoneNumber: string;
   role: Role;
   passwordHash?: string;
-  organisationId?: string;
-  organisation?: Organisation;
+  organizationId?: string;
+  organization?: Organization;
 
-  constructor({ pgDoc }: { pgDoc: UserModel & { organisation?: OrgModel } }) {
+  constructor({ pgDoc }: { pgDoc: UserModel & { organization?: OrgModel } }) {
     this.id = pgDoc.id;
     this.name = pgDoc.name;
     this.phoneNumber = pgDoc.phoneNumber;
     this.role = pgDoc.role as Role;
     this.passwordHash = pgDoc.passwordHash;
-    this.organisationId = pgDoc.organisationId
-      ? String(pgDoc.organisationId)
+    this.organizationId = pgDoc.organizationId
+      ? String(pgDoc.organizationId)
       : null;
-    this.organisation = pgDoc.organisation
-      ? new Organisation({ pgDoc: pgDoc.organisation })
+    this.organization = pgDoc.organization
+      ? new Organization({ pgDoc: pgDoc.organization })
       : null;
   }
 
@@ -32,7 +32,7 @@ export class User {
       name: this.name,
       phoneNumber: this.phoneNumber,
       role: this.role,
-      org: this.organisation,
+      org: this.organization,
     };
   }
 }

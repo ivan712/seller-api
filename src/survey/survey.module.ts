@@ -5,10 +5,10 @@ import { PrismaService } from '../db/prisma.service';
 import { SurveyAnswersRepository } from './survey-answers.repository';
 import { UserModule } from '../user/user.module';
 import { RabbitModule } from '../rabbit/rabbit.module';
-import { OrganisationModule } from '../organisation/organisation.module';
+import { OrganizationModule } from '../organization/organization.module';
 
 @Module({
-  imports: [UserModule, RabbitModule, OrganisationModule],
+  imports: [UserModule, RabbitModule, OrganizationModule],
   providers: [SurveyService, SurveyAnswersRepository, PrismaService],
   controllers: [SurveyController],
 })

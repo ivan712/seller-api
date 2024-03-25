@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../db/prisma.service';
-import { ICreateOrganisationData } from './interfaces/create-organisation.interface';
-import { IOrganisationRepository } from './interfaces/organisation-repository.interface';
-import { Organisation } from './organisation.entity';
+import { ICreateOrganizationData } from './interfaces/create-organization.interface';
+import { IOrganizationRepository } from './interfaces/organization-repository.interface';
+import { Organization } from './organization.entity';
 import { IDbOptions } from '../db/db-options.interface';
 import { Repository } from '../db/repository';
 import { ConfigService } from '@nestjs/config';
@@ -10,9 +10,9 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 
 @Injectable()
-export class OrganisationRepository
+export class OrganizationRepository
   extends Repository
-  implements IOrganisationRepository
+  implements IOrganizationRepository
 {
   private dadataUrl;
   private dadataToken;
@@ -28,45 +28,45 @@ export class OrganisationRepository
   }
 
   async create(
-    data: ICreateOrganisationData,
+    data: ICreateOrganizationData,
     dbOptions?: IDbOptions,
-  ): Promise<Organisation> {
-    const pgDoc = await this.getClient(dbOptions).organisation.create({ data });
-    return new Organisation({ pgDoc });
+  ): Promise<Organization> {
+    const pgDoc = await this.getClient(dbOptions).organization.create({ data });
+    return new Organization({ pgDoc });
   }
 
   async getByInn(
     inn: string,
     dbOptions?: IDbOptions,
-  ): Promise<Organisation | null> {
-    const pgDoc = await this.getClient(dbOptions).organisation.findFirst({
+  ): Promise<Organization | null> {
+    const pgDoc = await this.getClient(dbOptions).organization.findFirst({
       where: { inn },
     });
     if (!pgDoc) return null;
-    return new Organisation({ pgDoc });
+    return new Organization({ pgDoc });
   }
 
   async getByUserId(
     id: string,
     dbOptions?: IDbOptions,
-  ): Promise<Organisation | null> {
+  ): Promise<Organization | null> {
     const pgDoc = await this.getClient(dbOptions).user.findUnique({
       where: {
         id,
       },
       include: {
-        organisation: true,
+        organization: true,
       },
     });
 
-    const org = pgDoc.organisation;
+    const org = pgDoc.organization;
 
     if (!org) return null;
 
-    return new Organisation({ pgDoc: pgDoc.organisation });
+    return new Organization({ pgDoc: pgDoc.organization });
   }
 
-  async getOrgInfoFromDadata(inn: string): Promise<Organisation> {
+  async getOrgInfoFromDadata(inn: string): Promise<Organization> {
     const { data } = await firstValueFrom(
       this.httpService.post(
         this.dadataUrl,
@@ -82,15 +82,15 @@ export class OrganisationRepository
     );
     const orgInfo = data.suggestions[0];
 
-    return new Organisation({ apiDoc: orgInfo });
+    return new Organization({ apiDoc: orgInfo });
   }
 
   async updateOrgData(
     inn: string,
-    data: Partial<Omit<Organisation, 'id' | 'inn'>>,
+    data: Partial<Omit<Organization, 'id' | 'inn'>>,
     dbOptions?: IDbOptions,
   ): Promise<void> {
-    await this.getClient(dbOptions).organisation.update({
+    await this.getClient(dbOptions).organization.update({
       where: {
         inn,
       },

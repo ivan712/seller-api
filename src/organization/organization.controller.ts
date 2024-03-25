@@ -8,9 +8,9 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { OrganisationService } from './organisation.service';
-import { CreateOrganisationDto } from './create.dto';
-import { OrgStatus } from './organisation.entity';
+import { OrganizationService } from './organization.service';
+import { CreateOrganizationDto } from './create.dto';
+import { OrgStatus } from './organization.entity';
 import { OK_MESSAGE } from '../messages.constant';
 import { InnValidationPipe } from './inn-validation.pipe';
 import { Roles } from '../auth/jwt/decorators/roles.decorator';
@@ -43,12 +43,12 @@ import {
   successDadataSchema,
 } from './swagger/dadata.schema';
 
-@ApiTags('Organisation')
-@Controller('v1/organisation')
-export class OrganisationController {
+@ApiTags('Organization')
+@Controller('v1/organization')
+export class OrganizationController {
   constructor(
-    @Inject(OrganisationService)
-    private organisationService: OrganisationService,
+    @Inject(OrganizationService)
+    private organizationService: OrganizationService,
   ) {}
 
   @Post('registration')
@@ -56,15 +56,15 @@ export class OrganisationController {
   @UseGuards(RolesGuard)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Register organisation' })
+  @ApiOperation({ summary: 'Register organization' })
   @ApiBody(apiBodyOrgRegisterSchema)
   @ApiResponse(successOrgRegisterSchema)
   @ApiResponse(badRequestOrgRegisterSchema)
   async createOrg(
-    @Body(new CreateOrgValidationPipe()) dto: CreateOrganisationDto,
+    @Body(new CreateOrgValidationPipe()) dto: CreateOrganizationDto,
     @UserDecorator() user: User,
   ) {
-    await this.organisationService.create(
+    await this.organizationService.create(
       {
         ...dto,
         status: OrgStatus.ON_MODERATION,
@@ -80,13 +80,13 @@ export class OrganisationController {
   @Patch('registration/confirm/:inn')
   @UseGuards(BitrixAuthGuard)
   @ApiBasicAuth()
-  @ApiOperation({ summary: 'Confirm organisation registration from  bitrix' })
+  @ApiOperation({ summary: 'Confirm organization registration from  bitrix' })
   @ApiResponse(successOrgConfirmOrRejectSchema)
   @ApiResponse(notFoundOrgConfirmOrRejectSchema)
   async confirmRegistration(
     @Param('inn', new InnValidationPipe()) inn: string,
   ) {
-    await this.organisationService.updateOrgData(inn, {
+    await this.organizationService.updateOrgData(inn, {
       status: OrgStatus.REGISTRED,
     });
 
@@ -96,11 +96,11 @@ export class OrganisationController {
   @Patch('registration/reject/:inn')
   @UseGuards(BitrixAuthGuard)
   @ApiBasicAuth()
-  @ApiOperation({ summary: 'Reject organisation registration from  bitrix' })
+  @ApiOperation({ summary: 'Reject organization registration from  bitrix' })
   @ApiResponse(successOrgConfirmOrRejectSchema)
   @ApiResponse(notFoundOrgConfirmOrRejectSchema)
   async rejectRegistration(@Param('inn', InnValidationPipe) inn: string) {
-    await this.organisationService.updateOrgData(inn, {
+    await this.organizationService.updateOrgData(inn, {
       status: OrgStatus.REJECTED,
     });
 
@@ -112,12 +112,12 @@ export class OrganisationController {
   @UseGuards(RolesGuard)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get organisation info from dadata by inn' })
+  @ApiOperation({ summary: 'Get organization info from dadata by inn' })
   @ApiResponse(successDadataSchema)
   @ApiResponse(badRquestInvalidInnSchema)
   async getOrgInfoFromThirdartyApi(
     @Param('inn', new InnValidationPipe()) inn: string,
   ) {
-    return this.organisationService.getOrgInfoFromDadata(inn);
+    return this.organizationService.getOrgInfoFromDadata(inn);
   }
 }

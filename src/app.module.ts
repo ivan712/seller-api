@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserService } from './user/user.service';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
-import { OrganisationModule } from './organisation/organisation.module';
+import { OrganizationModule } from './organization/organization.module';
 import { RabbitModule } from './rabbit/rabbit.module';
 import { SurveyModule } from './survey/survey.module';
 
@@ -12,7 +12,7 @@ import { SurveyModule } from './survey/survey.module';
     ConfigModule.forRoot(),
     UserModule,
     AuthModule,
-    OrganisationModule,
+    OrganizationModule,
     RabbitModule,
     SurveyModule,
   ],

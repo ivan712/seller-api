@@ -19,18 +19,20 @@ model User {
   id             String         @id @default(uuid())
   phoneNumber    String         @unique
   name           String?
-  organisationId String?
-  organisation   Organisation?  @relation(fields: [organisationId], references: [id])
+  organizationId String?
+  organization   Organization?  @relation(fields: [organizationId], references: [id])
   role           Role
   passwordHash   String?
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
   SurveyAnswer   SurveyAnswer[]
+  RefreshToken   RefreshToken[]
 }
 
 model RefreshToken {
   // id     Int    @id @default(autoincrement())
   userId String
+  user   User?  @relation(fields: [userId], references: [id])
   token  String @unique
 }
 
@@ -54,13 +56,12 @@ enum OrgType {
 }
 
 enum OrgStatus {
-  sent_to_moderation
   on_moderation
   registered
   rejected
 }
 
-model Organisation {
+model Organization {
   id           String    @id @default(uuid())
   name         String
   inn          String    @unique

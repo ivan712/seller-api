@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { OrganisationService } from './organisation.service';
-import { OrganisationController } from './organisation.controller';
-import { OrganisationRepository } from './organisation.repository';
+import { OrganizationService } from './organization.service';
+import { OrganizationController } from './organization.controller';
+import { OrganizationRepository } from './organization.repository';
 import { PrismaModule } from '../db/prisma.module';
 import { InnValidationPipe } from './inn-validation.pipe';
 import { HttpModule } from '@nestjs/axios';
@@ -11,12 +11,12 @@ import { UserModule } from '../user/user.module';
 @Module({
   imports: [PrismaModule, HttpModule, UserModule],
   providers: [
-    OrganisationService,
-    OrganisationRepository,
+    OrganizationService,
+    OrganizationRepository,
     InnValidationPipe,
     ConfigService,
   ],
-  controllers: [OrganisationController],
-  exports: [OrganisationService, OrganisationRepository],
+  controllers: [OrganizationController],
+  exports: [OrganizationService, OrganizationRepository],
 })
-export class OrganisationModule {}
+export class OrganizationModule {}

@@ -17,7 +17,7 @@ export class UserRepository extends Repository implements IUserRepository {
       pgDoc: await this.getClient(dbOptions).user.create({
         data: {
           ...userInfo,
-          organisationId: null,
+          organizationId: null,
           passwordHash: null,
         },
       }),
@@ -27,7 +27,7 @@ export class UserRepository extends Repository implements IUserRepository {
   async getById(id: string, dbOptions?: IDbOptions): Promise<User | null> {
     const user = await this.getClient(dbOptions).user.findUnique({
       include: {
-        organisation: true,
+        organization: true,
       },
       where: {
         id,
@@ -45,7 +45,7 @@ export class UserRepository extends Repository implements IUserRepository {
   ): Promise<User | null> {
     const user = await this.getClient(dbOptions).user.findUnique({
       include: {
-        organisation: true,
+        organization: true,
       },
       where: {
         phoneNumber,
@@ -58,12 +58,12 @@ export class UserRepository extends Repository implements IUserRepository {
   }
 
   async update(
-    userData: Partial<Omit<User, 'id' | 'organisation'>>,
+    userData: Partial<Omit<User, 'id' | 'organization'>>,
     userId: string,
     dbOptions?: IDbOptions,
   ): Promise<void> {
-    const updateData = userData.organisationId
-      ? { ...userData, organisationId: userData.organisationId }
+    const updateData = userData.organizationId
+      ? { ...userData, organizationId: userData.organizationId }
       : userData;
     await this.getClient(dbOptions).user.update({
       data: updateData,

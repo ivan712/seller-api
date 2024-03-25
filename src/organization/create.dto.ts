@@ -1,12 +1,12 @@
 import { IsEnum, IsString, Matches } from 'class-validator';
-import { OrgType } from './organisation.entity';
+import { OrgType } from './organization.entity';
 import {
   INVALID_INN,
   INVALID_OGRN,
   INVALID_ORG_TYPE,
 } from '../messages.constant';
 
-export class CreateOrganisationDto {
+export class CreateOrganizationDto {
   @Matches(/^[\d]{10}|[\d]{12}$/, { message: INVALID_INN })
   inn: string;
 

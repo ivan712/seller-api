@@ -1,6 +1,6 @@
-import { OrgStatus, OrgType } from '../organisation.entity';
+import { OrgStatus, OrgType } from '../organization.entity';
 
-export interface ICreateOrganisationData {
+export interface ICreateOrganizationData {
   inn: string;
   name: string;
   type: OrgType;

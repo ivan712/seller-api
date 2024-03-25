@@ -21,7 +21,7 @@ export class UserController {
   @Get('me')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get user and organisation info' })
+  @ApiOperation({ summary: 'Get user and organization info' })
   @ApiResponse(successUserInfoSchema)
   @ApiResponse(invalidUserAccessToken)
   async getUserInfo(@TokenInfo() { userId }: { userId: string }) {

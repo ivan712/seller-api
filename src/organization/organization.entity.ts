@@ -1,4 +1,4 @@
-import { Organisation as OrganisationModel } from '@prisma/client';
+import { Organization as OrganizationModel } from '@prisma/client';
 import { IApiDocDadata } from './interfaces/dadata-api-doc.interface';
 
 export enum OrgType {
@@ -12,7 +12,7 @@ export enum OrgStatus {
   REJECTED = 'rejected',
 }
 
-export class Organisation {
+export class Organization {
   id: string;
   inn: string;
   name: string;
@@ -25,7 +25,7 @@ export class Organisation {
     pgDoc,
     apiDoc,
   }: {
-    pgDoc?: OrganisationModel;
+    pgDoc?: OrganizationModel;
     apiDoc?: IApiDocDadata;
   }) {
     if (pgDoc) {
