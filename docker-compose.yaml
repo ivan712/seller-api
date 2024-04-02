@@ -7,9 +7,9 @@ services:
     networks:
       - mxm_backend
     environment:
-      POSTGRES_DB: "mxm"
-      POSTGRES_USER: "admin"
-      POSTGRES_PASSWORD: "admin"
+      POSTGRES_DB: "dev-db"
+      POSTGRES_USER: "mxm"
+      POSTGRES_PASSWORD: "password"
     ports:
       - 5432:5432
   rabbitmq:

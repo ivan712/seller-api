@@ -11,5 +11,6 @@ import { OrganizationModule } from '../organization/organization.module';
   imports: [UserModule, RabbitModule, OrganizationModule],
   providers: [SurveyService, SurveyAnswersRepository, PrismaService],
   controllers: [SurveyController],
+  exports: [SurveyService],
 })
 export class SurveyModule {}

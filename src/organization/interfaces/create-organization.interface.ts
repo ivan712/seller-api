@@ -7,4 +7,5 @@ export interface ICreateOrganizationData {
   ogrn: string;
   legalAddress: string;
   status: OrgStatus;
+  adminComment?: string;
 }

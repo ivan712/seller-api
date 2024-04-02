@@ -15,4 +15,6 @@ export interface IOrganizationRepository {
     dbOptions?: IDbOptions,
   ): Promise<void>;
   getByUserId(id: string, dbOptions?: IDbOptions): Promise<Organization | null>;
+  getByOrgId(id: string, dbOptions?: IDbOptions): Promise<Organization | null>;
+  getAll(dbOptions?: IDbOptions): Promise<Organization[]>;
 }

@@ -4,8 +4,8 @@ import {
   HttpCode,
   HttpStatus,
   Inject,
+  Patch,
   Post,
-  Put,
   UseGuards,
 } from '@nestjs/common';
 import { CreatePasswordDto } from './dto/create-password.dto';
@@ -100,7 +100,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtUpdateGuard)
-  @Put('password/update')
+  @Patch('password/update')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update password' })
   @ApiBody(apiBodyPasswordUpdateSchema)

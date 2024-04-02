@@ -1,3 +1,4 @@
+import { Organization } from '../organization/organization.entity';
 import { IDbOptions } from '../db/db-options.interface';
 import { SurveyAnswer } from './answer.entity';
 
@@ -14,4 +15,7 @@ export interface ISurveyAnswersRepository {
     answers: SurveyAnswer,
     dbOptions?: IDbOptions,
   ): Promise<void>;
+  getAnswersWithOrg(
+    dbOptions?: IDbOptions,
+  ): Promise<{ surveyAnswer: SurveyAnswer; orgInfo: Organization }[]>;
 }

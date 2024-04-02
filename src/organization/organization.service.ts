@@ -47,15 +47,19 @@ export class OrganizationService {
   }
 
   async updateOrgData(
-    inn: string,
+    id: string,
     data: Partial<Omit<ICreateOrganizationData, 'inn'>>,
   ): Promise<void> {
-    const org = await this.getByInn(inn);
+    const org = await this.organizationRepository.getByOrgId(id);
     if (!org) throw new NotFoundException(ORG_NOT_FOUND);
-    await this.organizationRepository.updateOrgData(inn, data);
+    await this.organizationRepository.updateOrgData(id, data);
   }
 
   async getOrgInfoFromDadata(inn: string): Promise<Organization> {
     return this.organizationRepository.getOrgInfoFromDadata(inn);
+  }
+
+  async getAll(): Promise<Organization[]> {
+    return this.organizationRepository.getAll();
   }
 }

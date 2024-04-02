@@ -4,6 +4,7 @@ import { ISurveyAnswersRepository } from './survey-answers.interface';
 import { SurveyAnswer } from './answer.entity';
 import { IDbOptions } from '../db/db-options.interface';
 import { Repository } from '../db/repository';
+import { Organization } from '../organization/organization.entity';
 
 @Injectable()
 export class SurveyAnswersRepository
@@ -27,6 +28,21 @@ export class SurveyAnswersRepository
     if (!pgDoc) return null;
 
     return new SurveyAnswer({ pgDoc });
+  }
+
+  async getAnswersWithOrg(
+    dbOptions?: IDbOptions,
+  ): Promise<{ surveyAnswer: SurveyAnswer; orgInfo: Organization }[]> {
+    const pgDocs = await this.getClient(dbOptions).surveyAnswer.findMany({
+      include: { user: { include: { organization: true } } },
+    });
+
+    return pgDocs.map((pgDoc) => {
+      const surveyAnswer = new SurveyAnswer({ pgDoc });
+      const orgInfo = new Organization({ pgDoc: pgDoc.user.organization });
+
+      return { surveyAnswer, orgInfo };
+    });
   }
 
   async create(

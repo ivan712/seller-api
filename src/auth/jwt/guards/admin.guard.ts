@@ -8,17 +8,17 @@ import { AuthGuard } from '@nestjs/passport';
 import { UNAUTHORIZED } from '../../../messages.constant';
 
 @Injectable()
-export class BitrixAuthGuard extends AuthGuard('local') {
-  private bitrixAuthSecret;
+export class AdminAuthGuard extends AuthGuard('local') {
+  private adminAuthSecret;
   constructor(configService: ConfigService) {
     super();
-    this.bitrixAuthSecret = configService.get('BITRIX_AUTH_SECRET');
+    this.adminAuthSecret = configService.get('ADMIN_AUTH_SECRET');
   }
   async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
     const authToken = request.headers['authorization'];
 
-    if (!authToken || authToken !== this.bitrixAuthSecret)
+    if (!authToken || authToken !== this.adminAuthSecret)
       throw new UnauthorizedException(UNAUTHORIZED);
 
     return true;

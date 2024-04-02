@@ -4,7 +4,6 @@ import {
   Get,
   Inject,
   Param,
-  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -20,9 +19,7 @@ import { RolesGuard } from '../auth/jwt/guards/roles.guard';
 import { User as UserDecorator } from '../auth/jwt/decorators/user.decorator';
 import { User } from '../user/user.entity';
 import { CreateOrgValidationPipe } from './create-org-validation.pipe';
-import { BitrixAuthGuard } from '../auth/jwt/guards/bitrix.guard';
 import {
-  ApiBasicAuth,
   ApiBearerAuth,
   ApiBody,
   ApiOperation,
@@ -34,10 +31,6 @@ import {
   badRequestOrgRegisterSchema,
   successOrgRegisterSchema,
 } from './swagger/register.schema';
-import {
-  notFoundOrgConfirmOrRejectSchema,
-  successOrgConfirmOrRejectSchema,
-} from './swagger/confirm-reject.schema';
 import {
   badRquestInvalidInnSchema,
   successDadataSchema,
@@ -75,36 +68,6 @@ export class OrganizationController {
     return {
       message: OK_MESSAGE,
     };
-  }
-
-  @Patch('registration/confirm/:inn')
-  @UseGuards(BitrixAuthGuard)
-  @ApiBasicAuth()
-  @ApiOperation({ summary: 'Confirm organization registration from  bitrix' })
-  @ApiResponse(successOrgConfirmOrRejectSchema)
-  @ApiResponse(notFoundOrgConfirmOrRejectSchema)
-  async confirmRegistration(
-    @Param('inn', new InnValidationPipe()) inn: string,
-  ) {
-    await this.organizationService.updateOrgData(inn, {
-      status: OrgStatus.REGISTRED,
-    });
-
-    return { message: OK_MESSAGE };
-  }
-
-  @Patch('registration/reject/:inn')
-  @UseGuards(BitrixAuthGuard)
-  @ApiBasicAuth()
-  @ApiOperation({ summary: 'Reject organization registration from  bitrix' })
-  @ApiResponse(successOrgConfirmOrRejectSchema)
-  @ApiResponse(notFoundOrgConfirmOrRejectSchema)
-  async rejectRegistration(@Param('inn', InnValidationPipe) inn: string) {
-    await this.organizationService.updateOrgData(inn, {
-      status: OrgStatus.REJECTED,
-    });
-
-    return { message: OK_MESSAGE };
   }
 
   @Get('dadata/:inn')

@@ -12,7 +12,7 @@ export const apiBodyPassResetConfSchema = {
       },
       validationCode: {
         type: 'string',
-        example: '0123',
+        example: '012345',
         description: 'Мalidation code',
       },
     },

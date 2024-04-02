@@ -20,6 +20,7 @@ export class Organization {
   ogrn: string;
   legalAddress: string;
   status?: OrgStatus;
+  adminComment?: string;
 
   constructor({
     pgDoc,
@@ -36,6 +37,7 @@ export class Organization {
       this.ogrn = pgDoc.ogrn;
       this.legalAddress = pgDoc.legalAddress;
       this.status = pgDoc.status as OrgStatus;
+      this.adminComment = pgDoc.adminComment;
     } else if (apiDoc) {
       this.inn = apiDoc.data.inn;
       this.name = apiDoc.unrestricted_value;

@@ -13,6 +13,7 @@ import {
   NOT_FOUND_INFO_ABOUT_ORG,
   SURVEY_ANSWERS_ALREADY_EXIST,
 } from '../messages.constant';
+import { Organization } from '../organization/organization.entity';
 
 @Injectable()
 export class SurveyService {
@@ -38,5 +39,11 @@ export class SurveyService {
 
   async getUserAnswers(userId: string): Promise<SurveyAnswer> {
     return this.surveyAnswersRepository.getAnswersByUserId(userId);
+  }
+
+  async getUserAnswersWithOrg(): Promise<
+    { surveyAnswer: SurveyAnswer; orgInfo: Organization }[]
+  > {
+    return this.surveyAnswersRepository.getAnswersWithOrg();
   }
 }

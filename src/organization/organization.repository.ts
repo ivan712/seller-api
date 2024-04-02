@@ -46,6 +46,26 @@ export class OrganizationRepository
     return new Organization({ pgDoc });
   }
 
+  async getAll(dbOptions?: IDbOptions): Promise<Organization[]> {
+    const pgDocs = await this.getClient(dbOptions).organization.findMany();
+    return pgDocs.map((pgDoc) => new Organization({ pgDoc }));
+  }
+
+  async getByOrgId(
+    id: string,
+    dbOptions?: IDbOptions,
+  ): Promise<Organization | null> {
+    const pgDoc = await this.getClient(dbOptions).organization.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!pgDoc) return null;
+
+    return new Organization({ pgDoc });
+  }
+
   async getByUserId(
     id: string,
     dbOptions?: IDbOptions,
@@ -86,13 +106,14 @@ export class OrganizationRepository
   }
 
   async updateOrgData(
-    inn: string,
+    id: string,
     data: Partial<Omit<Organization, 'id' | 'inn'>>,
     dbOptions?: IDbOptions,
   ): Promise<void> {
+    console.log('data', data);
     await this.getClient(dbOptions).organization.update({
       where: {
-        inn,
+        id,
       },
       data,
     });
