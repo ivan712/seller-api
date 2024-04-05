@@ -21,6 +21,12 @@ export const apiBodyOrgRegisterSchema = {
         example: 'LEGAL',
         description: 'Organization type. LEGAL or INDIVIDUAL',
       },
+      taxSystem: {
+        type: 'string',
+        example: 'osno',
+        description:
+          'Tax system type. osno or usn_income or usn_income_expenses',
+      },
       ogrn: {
         type: 'string',
         example: '1234567890123',

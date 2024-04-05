@@ -1,10 +1,11 @@
-import { OrgStatus, OrgType } from '../organization.entity';
+import { OrgStatus, OrgTaxSystem, OrgType } from '../organization.entity';
 
 export interface ICreateOrganizationData {
   inn: string;
   name: string;
   type: OrgType;
   ogrn: string;
+  taxSystem: OrgTaxSystem;
   legalAddress: string;
   status: OrgStatus;
   adminComment?: string;

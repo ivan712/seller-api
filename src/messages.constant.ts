@@ -2,6 +2,8 @@ export const OK_MESSAGE = 'Ok';
 
 export const UNAUTHORIZED = 'Unauthorized';
 
+export const VALIDATION_ERROR = 'Validation error';
+
 export const USER_NOT_FOUND = 'Пользователь не найден';
 export const USER_ALREADY_EXIST = 'Пользователь уже зарегистрирован';
 export const INCORRECT_USER_NAME_OR_PASSWORD =

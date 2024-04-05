@@ -53,7 +53,7 @@ export class AuthService {
   async preregister(registerData: { phoneNumber: string }): Promise<void> {
     const user = await this.userService.getByPhone(registerData.phoneNumber);
 
-    if (user) throw new BadRequestException(USER_ALREADY_EXIST);
+    if (user?.passwordHash) throw new BadRequestException(USER_ALREADY_EXIST);
 
     await this.upsertValidationCode(registerData.phoneNumber);
   }
@@ -146,13 +146,13 @@ export class AuthService {
   ): Promise<{ updateToken: string }> {
     const user = await this.userService.getByPhone(userData.phoneNumber);
 
-    if (user) throw new BadRequestException(USER_ALREADY_EXIST);
+    if (user?.passwordHash) throw new BadRequestException(USER_ALREADY_EXIST);
     const updateToken = await this.generatePasswordUpdateToken(
       validationCode,
       userData.phoneNumber,
     );
 
-    await this.userService.create(userData);
+    if (!user) await this.userService.create(userData);
 
     return updateToken;
   }

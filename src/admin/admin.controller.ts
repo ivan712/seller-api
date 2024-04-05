@@ -1,4 +1,11 @@
-import { Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Patch,
+  UseGuards,
+  UsePipes,
+} from '@nestjs/common';
 import {
   ApiBasicAuth,
   ApiOperation,
@@ -17,9 +24,11 @@ import { OK_MESSAGE } from '../messages.constant';
 import { SurveyService } from '../survey/survey.service';
 import { OrgIdDto } from './dto/org-id.dto';
 import { idParamSchema } from './swagger/id-param.schema';
+import { ValidationDataPipe } from '../validation.pipe';
 
 @ApiTags('Admin')
 @Controller('v1/admin')
+@UsePipes(ValidationDataPipe)
 export class AdminController {
   constructor(
     private organizationService: OrganizationService,

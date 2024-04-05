@@ -1,14 +1,12 @@
-import { IsEnum, IsPhoneNumber, IsString, Matches } from 'class-validator';
-import { Role } from '../../user/roles.enum';
+import { IsPhoneNumber, IsString, Matches } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class RegisterDto {
   @IsString()
   name: string;
 
-  @IsEnum(Role)
-  role: Role;
-
-  @IsPhoneNumber()
+  @IsPhoneNumber('RU')
+  @Transform((data) => data.value.replace(/[^!\d]/g, ''))
   phoneNumber: string;
 
   @Matches(/^[\d]{6}$/)

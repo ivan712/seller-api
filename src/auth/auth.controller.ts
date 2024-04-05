@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   UseGuards,
+  UsePipes,
 } from '@nestjs/common';
 import { CreatePasswordDto } from './dto/create-password.dto';
 import { AuthService } from './auth.service';
@@ -61,6 +62,9 @@ import {
   badRequestPassResetConfSchema,
   successPassResetConfSchema,
 } from './swagger/password-reset-conf.schema';
+import { ValidationDataPipe } from '../validation.pipe';
+import { LoginValidationPipe } from './login-validation.pipe';
+import { Role } from '../user/roles.enum';
 
 @ApiTags('Auth')
 @Controller('v1/auth')
@@ -69,13 +73,12 @@ export class AuthController {
 
   @Post('preregister')
   @HttpCode(HttpStatus.OK)
+  @UsePipes(ValidationDataPipe)
   @ApiOperation({ summary: 'Get sms code for registration' })
   @ApiBody(apiBodyPreregisterSchema)
   @ApiResponse(successPreregisterSchema)
   @ApiResponse(badRequestPreregisterSchema)
   async preregister(@Body() dto: PhoneNumberDto) {
-    dto.phoneNumber = dto.phoneNumber.replace(/[^!\d]/g, '');
-
     await this.authService.preregister({
       ...dto,
     });
@@ -86,15 +89,14 @@ export class AuthController {
   }
 
   @Post('register')
+  @UsePipes(ValidationDataPipe)
   @ApiOperation({ summary: 'Register user' })
   @ApiBody(apiBodyRegisterSchema)
   @ApiResponse(successRegisterSchema)
   @ApiResponse(badRequestRegisterSchema)
   async register(@Body() dto: RegisterDto) {
-    dto.phoneNumber = dto.phoneNumber.replace(/[^!\d]/g, '');
-
     return this.authService.register(
-      { phoneNumber: dto.phoneNumber, name: dto.name, role: dto.role },
+      { phoneNumber: dto.phoneNumber, name: dto.name, role: Role.OWNER },
       dto.validationCode,
     );
   }
@@ -102,6 +104,7 @@ export class AuthController {
   @UseGuards(JwtUpdateGuard)
   @Patch('password/update')
   @ApiBearerAuth()
+  @UsePipes(ValidationDataPipe)
   @ApiOperation({ summary: 'Update password' })
   @ApiBody(apiBodyPasswordUpdateSchema)
   @ApiResponse(successPasswordUpdateSchema)
@@ -117,12 +120,12 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @UsePipes(LoginValidationPipe, ValidationDataPipe)
   @ApiOperation({ summary: 'Login' })
   @ApiBody(apiBodyLoginSchema)
   @ApiResponse(successLoginSchema)
   @ApiResponse(badRequestLoginSchema)
   async login(@Body() dto: LoginDto) {
-    dto.phoneNumber = dto.phoneNumber.replace(/[^!\d]/g, '');
     return this.authService.login(dto.phoneNumber, dto.password);
   }
 
@@ -130,6 +133,7 @@ export class AuthController {
   @UseGuards(JwtRefreshGuard)
   @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
+  @UsePipes(ValidationDataPipe)
   @ApiOperation({ summary: 'Refresh tokens' })
   @ApiResponse(successRefreshSchema)
   @ApiResponse(invalidRefreshTokenSchema)
@@ -143,6 +147,7 @@ export class AuthController {
   @Post('logout')
   @UseGuards(JwtRefreshGuard)
   @HttpCode(HttpStatus.OK)
+  @UsePipes(ValidationDataPipe)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Logout' })
   @ApiResponse(successLogoutSchema)
@@ -159,12 +164,12 @@ export class AuthController {
 
   @Post('password/reset/request')
   @HttpCode(HttpStatus.OK)
+  @UsePipes(ValidationDataPipe)
   @ApiOperation({ summary: 'Get sms code for password changing' })
   @ApiBody(apiBodyPassResetReqSchema)
   @ApiResponse(successPassResetReqSchema)
   @ApiResponse(notFoundPassResetReqSchema)
   async passwordResetRequest(@Body() dto: PhoneNumberDto) {
-    dto.phoneNumber = dto.phoneNumber.replace(/[^!\d]/g, '');
     await this.authService.passwordResetRequest(dto.phoneNumber);
     return {
       message: OK_MESSAGE,
@@ -172,15 +177,15 @@ export class AuthController {
   }
 
   @Post('password/reset/confirm')
+  @HttpCode(HttpStatus.OK)
+  @UsePipes(ValidationDataPipe)
   @ApiOperation({
     summary: 'Enter sms code and get token for password changing',
   })
   @ApiBody(apiBodyPassResetConfSchema)
   @ApiResponse(successPassResetConfSchema)
   @ApiResponse(badRequestPassResetConfSchema)
-  @HttpCode(HttpStatus.OK)
   async passwordResetConfirm(@Body() dto: ResetPasswordDto) {
-    dto.phoneNumber = dto.phoneNumber.replace(/[^!\d]/g, '');
     return this.authService.passwordResetConfirm(
       dto.phoneNumber,
       dto.validationCode,

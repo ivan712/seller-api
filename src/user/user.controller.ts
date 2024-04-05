@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards, UsePipes } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from '../auth/jwt/guards/access-token.guard';
 import { TokenInfo } from '../auth/jwt/decorators/token.decorator';
@@ -12,9 +12,11 @@ import {
   invalidUserAccessToken,
   successUserInfoSchema,
 } from './swagger/user-info.schema';
+import { ValidationDataPipe } from '../validation.pipe';
 
 @ApiTags('User')
 @Controller('v1/user')
+@UsePipes(ValidationDataPipe)
 export class UserController {
   constructor(private userService: UserService) {}
 

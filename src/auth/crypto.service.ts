@@ -7,16 +7,20 @@ import { genSalt, hash, compare } from 'bcryptjs';
 export class CryptoService {
   private minRandomValue;
   private maxRandomValue;
+  private verificationCodelength;
   private saltLength;
   private randomStringLength;
 
   constructor(@Inject(ConfigService) private configService: ConfigService) {
-    this.minRandomValue = Number(this.configService.get('MIN_RANDOM_VALUE'));
-    this.maxRandomValue = Number(this.configService.get('MAX_RANDOM_VALUE'));
     this.saltLength = Number(this.configService.get('SALT_LENGTH'));
+    this.verificationCodelength = Number(
+      this.configService.get('VERIFICATION_CODE_LENGTH'),
+    );
     this.randomStringLength = Number(
       this.configService.get('RANDOM_STRING_LENGTH'),
     );
+    this.minRandomValue = 0;
+    this.maxRandomValue = Number('9'.repeat(this.verificationCodelength));
   }
 
   async validateData(data: string, dataHash: string): Promise<Boolean> {

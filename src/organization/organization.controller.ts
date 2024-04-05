@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   UseGuards,
+  UsePipes,
 } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
 import { CreateOrganizationDto } from './create.dto';
@@ -35,9 +36,11 @@ import {
   badRquestInvalidInnSchema,
   successDadataSchema,
 } from './swagger/dadata.schema';
+import { ValidationDataPipe } from '../validation.pipe';
 
 @ApiTags('Organization')
 @Controller('v1/organization')
+@UsePipes(ValidationDataPipe)
 export class OrganizationController {
   constructor(
     @Inject(OrganizationService)
@@ -54,7 +57,7 @@ export class OrganizationController {
   @ApiResponse(successOrgRegisterSchema)
   @ApiResponse(badRequestOrgRegisterSchema)
   async createOrg(
-    @Body(new CreateOrgValidationPipe()) dto: CreateOrganizationDto,
+    @Body(CreateOrgValidationPipe) dto: CreateOrganizationDto,
     @UserDecorator() user: User,
   ) {
     await this.organizationService.create(

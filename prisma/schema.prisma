@@ -60,12 +60,19 @@ enum OrgStatus {
   rejected
 }
 
+enum TaxSystem {
+  osno
+  usn_income
+  usn_income_expenses
+}
+
 model Organization {
   id           String    @id @default(uuid())
   name         String
   inn          String    @unique
   type         OrgType
   ogrn         String
+  taxSystem    TaxSystem
   legalAddress String
   status       OrgStatus
   adminComment String?

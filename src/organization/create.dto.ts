@@ -1,5 +1,5 @@
 import { IsEnum, IsString, Matches } from 'class-validator';
-import { OrgType } from './organization.entity';
+import { OrgTaxSystem, OrgType } from './organization.entity';
 import {
   INVALID_INN,
   INVALID_OGRN,
@@ -16,8 +16,11 @@ export class CreateOrganizationDto {
   @IsEnum(OrgType, { message: INVALID_ORG_TYPE })
   type: OrgType;
 
-  @Matches(/^[\d]{13}$/, { message: INVALID_OGRN })
+  @Matches(/^[\d]{13}|[\d]{15}$/, { message: INVALID_OGRN })
   ogrn: string;
+
+  @IsEnum(OrgTaxSystem)
+  taxSystem: OrgTaxSystem;
 
   @IsString()
   legalAddress: string;

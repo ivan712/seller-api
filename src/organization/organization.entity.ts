@@ -12,12 +12,19 @@ export enum OrgStatus {
   REJECTED = 'rejected',
 }
 
+export enum OrgTaxSystem {
+  OSNO = 'osno',
+  USN_INCOME = 'usn_income',
+  USN_INCOME_EXPENSES = 'usn_income_expenses',
+}
+
 export class Organization {
   id: string;
   inn: string;
   name: string;
   type: OrgType;
   ogrn: string;
+  taxSystem?: OrgTaxSystem;
   legalAddress: string;
   status?: OrgStatus;
   adminComment?: string;
@@ -30,11 +37,12 @@ export class Organization {
     apiDoc?: IApiDocDadata;
   }) {
     if (pgDoc) {
-      this.id = String(pgDoc.id);
+      this.id = pgDoc.id;
       this.inn = pgDoc.inn;
       this.name = pgDoc.name;
       this.type = pgDoc.type as OrgType;
       this.ogrn = pgDoc.ogrn;
+      this.taxSystem = pgDoc.taxSystem as OrgTaxSystem;
       this.legalAddress = pgDoc.legalAddress;
       this.status = pgDoc.status as OrgStatus;
       this.adminComment = pgDoc.adminComment;
