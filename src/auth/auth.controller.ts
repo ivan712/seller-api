@@ -96,7 +96,7 @@ export class AuthController {
   @ApiResponse(badRequestRegisterSchema)
   async register(@Body() dto: RegisterDto) {
     return this.authService.register(
-      { phoneNumber: dto.phoneNumber, name: dto.name, role: Role.OWNER },
+      { phoneNumber: dto.phoneNumber, name: 'User', role: Role.OWNER },
       dto.validationCode,
     );
   }

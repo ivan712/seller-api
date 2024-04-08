@@ -15,16 +15,6 @@ export const apiBodyRegisterSchema = {
         example: '012345',
         description: 'validation code',
       },
-      name: {
-        type: 'string',
-        example: 'Ivan',
-        description: "user's name",
-      },
-      role: {
-        type: 'string',
-        example: 'owner',
-        description: "user's role",
-      },
     },
   },
 };

@@ -17,12 +17,12 @@ export const apiBodyOrgRegisterSchema = {
         description: 'Organization name',
       },
       type: {
-        type: 'string',
+        type: 'enum',
         example: 'LEGAL',
         description: 'Organization type. LEGAL or INDIVIDUAL',
       },
       taxSystem: {
-        type: 'string',
+        type: 'enum',
         example: 'osno',
         description:
           'Tax system type. osno or usn_income or usn_income_expenses',
@@ -30,7 +30,8 @@ export const apiBodyOrgRegisterSchema = {
       ogrn: {
         type: 'string',
         example: '1234567890123',
-        description: 'Organization ogrn. 13 digits',
+        description:
+          'Organization ogrn. 13 digits for LEGAL and 15 for INDIVIDUAL',
       },
       legalAddress: {
         type: 'string',

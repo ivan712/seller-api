@@ -25,9 +25,9 @@ async function bootstrap() {
     encoding: 'utf8',
   });
 
+  //only for dev !!!
   app.enableCors({
-    // add multiple origins here
-    origin: ['https://learn.javascript.ru', 'https://habr.co'],
+    origin: '*',
   });
 
   await app.listen(3000);

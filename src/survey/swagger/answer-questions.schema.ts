@@ -16,10 +16,10 @@ export const apiAnswerQuestionsSchema = {
         description: 'Seller city',
       },
       salePlace: {
-        type: 'string',
+        type: 'enum',
         example: 'RF',
         description:
-          "Sales either in seller's region or throughout the Russian Federation",
+          "Sales either in seller's region or throughout the Russian Federation. Possible meanings: RF, seller_city",
       },
       mandatoryCertification: {
         type: 'boolean',
@@ -34,7 +34,7 @@ export const apiAnswerQuestionsSchema = {
         },
       },
       workingModel: {
-        type: 'string',
+        type: 'enum',
         example: 'FBO',
         description: 'Working model: FBO or FBS',
       },

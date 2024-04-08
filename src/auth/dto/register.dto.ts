@@ -1,14 +1,15 @@
-import { IsPhoneNumber, IsString, Matches } from 'class-validator';
+import { IsPhoneNumber, Matches } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { Injectable } from '@nestjs/common';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
+@Injectable()
 export class RegisterDto {
-  @IsString()
-  name: string;
-
   @IsPhoneNumber('RU')
   @Transform((data) => data.value.replace(/[^!\d]/g, ''))
   phoneNumber: string;
 
-  @Matches(/^[\d]{6}$/)
+  @Matches(new RegExp(`^[\\d]{${process.env.VERIFICATION_CODE_LENGTH}}$`))
   validationCode: string;
 }

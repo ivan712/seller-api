@@ -1,3 +1,6 @@
+import { HttpStatus } from '@nestjs/common';
+import { UNAUTHORIZED, VALIDATION_ERROR } from '../../messages.constant';
+
 export const apiBodyPasswordUpdateSchema = {
   schema: {
     type: 'object',
@@ -12,7 +15,7 @@ export const apiBodyPasswordUpdateSchema = {
 };
 
 export const successPasswordUpdateSchema = {
-  status: 200,
+  status: HttpStatus.OK,
   description: 'Password has been changed or created succesfully',
   schema: {
     type: 'object',
@@ -33,42 +36,39 @@ export const successPasswordUpdateSchema = {
 
 export const invalidUpdateTokenSchema = {
   status: 401,
-  description: 'Invalid jwt update token',
+  description: 'Invalid or expired jwt update token',
   schema: {
     type: 'object',
     properties: {
       message: {
         type: 'string',
-        example: 'Unauthorized',
+        example: UNAUTHORIZED,
       },
       statusCode: {
         type: 'integer',
-        example: 401,
+        example: HttpStatus.UNAUTHORIZED,
       },
     },
   },
 };
 
 export const badRequestPasswordUpdateSchema = {
-  status: 400,
+  status: HttpStatus.BAD_REQUEST,
   description: 'Password is not strong enough',
   schema: {
     type: 'object',
     properties: {
       statusCode: {
         type: 'integer',
-        example: 400,
+        example: HttpStatus.BAD_REQUEST,
       },
       error: {
         type: 'string',
         example: 'Bad Request',
       },
       message: {
-        type: 'array',
-        items: {
-          type: 'string',
-          example: 'Password is not strong enough',
-        },
+        type: 'string',
+        example: VALIDATION_ERROR,
       },
     },
   },
