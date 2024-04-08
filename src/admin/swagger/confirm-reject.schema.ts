@@ -1,6 +1,19 @@
 import { HttpStatus } from '@nestjs/common';
 import { OK_MESSAGE, ORG_NOT_FOUND } from '../../messages.constant';
 
+export const apiBodyRejectSchema = {
+  schema: {
+    type: 'object',
+    properties: {
+      comment: {
+        type: 'string',
+        example: 'We have not found organization with such inn',
+        description: 'Admin comment',
+      },
+    },
+  },
+};
+
 export const successOrgConfirmOrRejectSchema = {
   status: HttpStatus.OK,
   description: 'Successful confirmation of the organization registration',

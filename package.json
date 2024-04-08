@@ -5,6 +5,9 @@
   "author": "",
   "private": true,
   "license": "UNLICENSED",
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  },
   "scripts": {
     "build": "nest build",
     "db-sync:dev": "npx prisma format && npx prisma generate && npx prisma db push",
@@ -41,7 +44,6 @@
     "crypto": "^1.0.1",
     "dotenv": "^16.4.5",
     "passport": "^0.7.0",
-    "passport-custom": "^1.1.1",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "pg": "^8.11.3",

@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   Param,
@@ -8,6 +9,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOperation,
   ApiParam,
   ApiResponse,
@@ -15,6 +17,7 @@ import {
 } from '@nestjs/swagger';
 import { OrgStatus } from '../organization/organization.entity';
 import {
+  apiBodyRejectSchema,
   notFoundOrgConfirmOrRejectSchema,
   successOrgConfirmOrRejectSchema,
 } from './swagger/confirm-reject.schema';
@@ -24,15 +27,18 @@ import { SurveyService } from '../survey/survey.service';
 import { OrgIdDto } from './dto/org-id.dto';
 import { idParamSchema } from './swagger/id-param.schema';
 import { ValidationDataPipe } from '../validation.pipe';
-import { JwtRefreshGuard } from '../auth/jwt/guards/refresh-token.guard';
 import { Roles } from '../auth/jwt/decorators/roles.decorator';
 import { Role } from '../user/roles.enum';
+import { JwtAuthGuard } from 'src/auth/jwt/guards/access-token.guard';
+import { RolesGuard } from 'src/auth/jwt/guards/roles.guard';
+import { RejectOrgDto } from './dto/reject-org.dto';
 
 @ApiTags('Admin')
 @ApiBearerAuth()
 @Controller('v1/admin')
 @Roles(Role.ADMIN)
-@UseGuards(JwtRefreshGuard)
+@UseGuards(RolesGuard)
+@UseGuards(JwtAuthGuard)
 @UsePipes(ValidationDataPipe)
 export class AdminController {
   constructor(
@@ -48,6 +54,7 @@ export class AdminController {
   async confirmRegistration(@Param() dto: OrgIdDto) {
     await this.organizationService.updateOrgData(dto.id, {
       status: OrgStatus.REGISTRED,
+      adminComment: null,
     });
 
     return { message: OK_MESSAGE };
@@ -56,11 +63,16 @@ export class AdminController {
   @Patch('organization/registration/reject/:id')
   @ApiParam(idParamSchema)
   @ApiOperation({ summary: 'Reject organization registration' })
+  @ApiBody(apiBodyRejectSchema)
   @ApiResponse(successOrgConfirmOrRejectSchema)
   @ApiResponse(notFoundOrgConfirmOrRejectSchema)
-  async rejectRegistration(@Param() dto: OrgIdDto) {
-    await this.organizationService.updateOrgData(dto.id, {
+  async rejectRegistration(
+    @Param() odgIdDto: OrgIdDto,
+    @Body() commentDto: RejectOrgDto,
+  ) {
+    await this.organizationService.updateOrgData(odgIdDto.id, {
       status: OrgStatus.REJECTED,
+      adminComment: commentDto.comment,
     });
 
     return { message: OK_MESSAGE };

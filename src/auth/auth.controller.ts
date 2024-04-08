@@ -88,9 +88,9 @@ export class AuthController {
     };
   }
 
-  @Post('register')
+  @Post('register/owner')
   @UsePipes(ValidationDataPipe)
-  @ApiOperation({ summary: 'Register user' })
+  @ApiOperation({ summary: 'Register organization owner' })
   @ApiBody(apiBodyRegisterSchema)
   @ApiResponse(successRegisterSchema)
   @ApiResponse(badRequestRegisterSchema)
