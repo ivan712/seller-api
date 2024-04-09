@@ -18,7 +18,9 @@ import {
 import { OrgStatus } from '../organization/organization.entity';
 import {
   apiBodyRejectSchema,
+  invalidRoleSchema,
   notFoundOrgConfirmOrRejectSchema,
+  successGetAllAplicationsSchema,
   successOrgConfirmOrRejectSchema,
 } from './swagger/confirm-reject.schema';
 import { OrganizationService } from '../organization/organization.service';
@@ -80,6 +82,8 @@ export class AdminController {
 
   @Get('application/all')
   @ApiOperation({ summary: 'Get all applications' })
+  @ApiResponse(successGetAllAplicationsSchema)
+  @ApiResponse(invalidRoleSchema)
   async getAllOrgs() {
     return this.surveyService.getUserAnswersWithOrg();
   }
