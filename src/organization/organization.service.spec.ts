@@ -109,7 +109,7 @@ describe('OrganizationService', () => {
 
     it('success', async () => {
       const spyMockGetByInn = jest
-        .spyOn(organizationService, 'getByInn')
+        .spyOn(organizationRepository, 'getByOrgId')
         .mockImplementation(
           (inn) => Promise.resolve({ inn }) as unknown as Promise<Organization>,
         );
@@ -127,19 +127,16 @@ describe('OrganizationService', () => {
     });
 
     it('organization not found', async () => {
-      const spyMockGetByInn = jest
-        .spyOn(organizationService, 'getByInn')
-        .mockImplementation(() => null);
-
       const spyMockUpdateOrgData = jest.spyOn(
         organizationRepository,
         'updateOrgData',
       );
 
+      organizationRepository.getByOrgId.mockResolvedValueOnce(null);
+
       expect(organizationService.updateOrgData(inn, data)).rejects.toThrow(
         ORG_NOT_FOUND,
       );
-      expect(spyMockGetByInn).toHaveBeenCalledWith(inn);
       expect(spyMockUpdateOrgData).not.toHaveBeenCalled();
     });
   });

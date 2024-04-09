@@ -74,7 +74,7 @@ describe('AuthService', () => {
 
       const spyMock = jest
         .spyOn(authService, 'upsertValidationCode')
-        .mockImplementation(() => undefined);
+        .mockResolvedValue(undefined);
       userService.getByPhone.mockResolvedValueOnce(null);
 
       expect(await authService.preregister({ phoneNumber })).toBeUndefined();
@@ -84,8 +84,10 @@ describe('AuthService', () => {
     it('user exists - should be without any error', async () => {
       const spyMock = jest
         .spyOn(authService, 'upsertValidationCode')
-        .mockImplementation(() => undefined);
-      userService.getByPhone.mockResolvedValueOnce({} as User);
+        .mockResolvedValueOnce(undefined);
+      userService.getByPhone.mockResolvedValueOnce({
+        passwordHash: '123',
+      } as User);
 
       expect(authService.preregister({ phoneNumber: '' })).rejects.toThrow(
         USER_ALREADY_EXIST,
@@ -189,6 +191,7 @@ describe('AuthService', () => {
         updateJwt: 'updateJwt',
         jwtid: 'id',
       };
+      const phoneNumber = '123321';
       const code = '999';
 
       validationDataRepository.get.mockResolvedValueOnce(validationCode);
@@ -271,7 +274,9 @@ describe('AuthService', () => {
 
   describe('register', () => {
     it('user alredy exists', async () => {
-      userService.getByPhone.mockResolvedValueOnce({} as User);
+      userService.getByPhone.mockResolvedValueOnce({
+        passwordHash: '123 ',
+      } as User);
       expect(authService.register({} as ICreateUser, '')).rejects.toThrow(
         USER_ALREADY_EXIST,
       );

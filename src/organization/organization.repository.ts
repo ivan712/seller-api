@@ -110,7 +110,6 @@ export class OrganizationRepository
     data: Partial<Omit<Organization, 'id' | 'inn'>>,
     dbOptions?: IDbOptions,
   ): Promise<void> {
-    console.log('data', data);
     await this.getClient(dbOptions).organization.update({
       where: {
         id,
