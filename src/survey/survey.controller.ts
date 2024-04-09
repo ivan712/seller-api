@@ -30,7 +30,7 @@ import {
   invalidAccessTokenSchema,
   successGetUserAnswerSchema,
 } from './swagger/get-answers.schema';
-import { ValidationDataPipe } from 'src/validation.pipe';
+import { ValidationDataPipe } from '../validation.pipe';
 
 @ApiTags('Survey')
 @Controller('v1/survey')

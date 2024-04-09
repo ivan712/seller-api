@@ -29,8 +29,8 @@ import { idParamSchema } from './swagger/id-param.schema';
 import { ValidationDataPipe } from '../validation.pipe';
 import { Roles } from '../auth/jwt/decorators/roles.decorator';
 import { Role } from '../user/roles.enum';
-import { JwtAuthGuard } from 'src/auth/jwt/guards/access-token.guard';
-import { RolesGuard } from 'src/auth/jwt/guards/roles.guard';
+import { JwtAuthGuard } from '../auth/jwt/guards/access-token.guard';
+import { RolesGuard } from '../auth/jwt/guards/roles.guard';
 import { RejectOrgDto } from './dto/reject-org.dto';
 
 @ApiTags('Admin')
