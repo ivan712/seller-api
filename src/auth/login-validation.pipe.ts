@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
-import { INCORRECT_USER_NAME_OR_PASSWORD } from 'src/messages.constant';
+import { INCORRECT_USER_NAME_OR_PASSWORD } from '../messages.constant';
 
 @Injectable()
 export class LoginValidationPipe implements PipeTransform<any> {
