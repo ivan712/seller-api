@@ -7,4 +7,4 @@ ADD . .
 RUN npx prisma generate
 RUN pnpm run build
 RUN pnpm prune --production
-CMD node npx prisma db push && /opt/app/dist/src/main.js
+CMD npx prisma db push && node /opt/app/dist/src/main.js
