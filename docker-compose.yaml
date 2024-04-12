@@ -27,7 +27,7 @@ services:
       interval: 30s
       timeout: 30s
       retries: 3
-      start_period: 30s
+      start_period: 10s
     ports:
       - 15672:15672
       - 5672:5672
@@ -41,7 +41,7 @@ services:
       rabbitmq:
         condition: service_healthy
     ports:
-      - 3000:3000
+      - ${PORT}:${PORT}
     volumes:
       - ./.env:/opt/app/.env
 networks:
